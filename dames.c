@@ -206,6 +206,9 @@ int saisir_deplacement(char * deplacement, int * x1, int * y1, int * x2, int * y
     }
     if(mouvement == 2){
       /*
+      on verifie si la case qui suis est libre avant de pouvoir faire la capture
+      et la capture est obligatoir qd c possible.
+      aussi on doit prendre en compte les raffles qd tu peux capturer plus c obligatoire 
         1. on initialise un tableau avec toutes les cases qui font partie de la capture
         2. on vérifie et effectue les captures deux par deux
       */
