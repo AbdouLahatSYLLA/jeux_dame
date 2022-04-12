@@ -207,6 +207,7 @@ int saisir_deplacement(char * deplacement, int * x1, int * y1, int * x2, int * y
         1. on initialise un tableau avec toutes les cases qui font partie de la capture
         2. on vérifie et effectue les captures deux par deux
       */
+
       printf("Il s'agit d'une capture.\n");
       return 1;
     }
@@ -266,8 +267,24 @@ int verifier_capture(jeu_t jeu, int numero1, int numero2){
   coord_numero(jeu, numero2, &x2, &y2);
   putchar('\n');
   if(verifier_deplacement(jeu, numero1, numero2)){
-    
+
   }
   printf("Capture impossible : tom.\n\n");
   return 0;
 }
+
+void effacer_pions_graphique( int i, int j ){
+
+}
+
+/*
+int ScanToutDammierSiJoueurDoitPrendre (int damier[10][10], int numerojoueur, int numeroAdversaire){
+
+	int i, j, k;
+
+	for (j=1; j<=10 ; j++)
+		for (i= 1; i<=10 && k !=1 ;i++)
+			 k = ScanCasesContigueSiPionAdverseAPrendre (damier,i, j,numerojoueur,numeroAdversaire); // dès qu'on trouve que le joueur peut prendre un pion, on arrête la recherche avec k == 1. Si le joueur ne peut pas prendre aucun pion, la boucle se termine avec k == 0
+	return k;
+}
+*/

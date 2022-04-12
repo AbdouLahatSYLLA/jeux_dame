@@ -33,5 +33,7 @@ int saisir_deplacement(char* deplacement,int * x1, int * y1, int * x2, int * y2,
 void coord_numero(jeu_t jeu, int numero, int * x, int * y);
 int verifier_deplacement(jeu_t jeu, int numero1, int numero2);
 int verifier_capture(jeu_t jeu, int numero1, int numero2);
+/*fonction qui efface un pion apres qu on l ait capturer*/
+void effacer_pions_graphique( int i, int j );
 
 #endif
