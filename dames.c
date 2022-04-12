@@ -5,6 +5,8 @@
 
 void initialiser_jeu(jeu_t * jeu){
   int num = 1;
+  jeu->nb_noir = 20;
+  jeu->nb_blanc = 20;
   for(int i = 0; i < 10; i++){
     for(int j = 0 ; j < 10 ; j++) {
        if(i == 4 || i == 5) {
@@ -273,9 +275,11 @@ int verifier_capture(jeu_t jeu, int numero1, int numero2){
   return 0;
 }
 
-void effacer_pions_graphique( int i, int j ){
-
+/*fonction pour la capture l' idée est quand y a capture on remplace le pion par un point et on decremente le nombre du pion en question*/
+void effacer_pions_graphique( jeu_t * jeu,int i, int j ){
+  jeu->plateau[i][j] = '.';
 }
+
 
 /*
 int ScanToutDammierSiJoueurDoitPrendre (int damier[10][10], int numerojoueur, int numeroAdversaire){

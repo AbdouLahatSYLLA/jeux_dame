@@ -22,6 +22,8 @@ typedef struct{
   int en_cours;
   int tour;
   int nb_coups;
+  int nb_noir;
+  int nb_blanc;
 } jeu_t;
 
 void initialiser_jeu(jeu_t * jeu);
@@ -34,6 +36,5 @@ void coord_numero(jeu_t jeu, int numero, int * x, int * y);
 int verifier_deplacement(jeu_t jeu, int numero1, int numero2);
 int verifier_capture(jeu_t jeu, int numero1, int numero2);
 /*fonction qui efface un pion apres qu on l ait capturer*/
-void effacer_pions_graphique( int i, int j );
-
+void effacer_pions_graphique( jeu_t jeu,int i, int j );
 #endif
