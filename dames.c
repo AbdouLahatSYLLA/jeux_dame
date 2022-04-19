@@ -486,5 +486,4 @@ int capture_est_possible(jeu_t jeu, int * numero1, int * numero2){
   }
   printf("Aucune capture n'est possible.\n");
   return 0;
-  /*c du jus*/
 }
