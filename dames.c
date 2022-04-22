@@ -100,30 +100,20 @@ void verifier_dame(jeu_t * jeu){
   return;
 }
 
-void deplacer_pion (jeu_t * jeu , int x1,int y1,int x2,int y2) {
-
-    if(jeu->plateau[x2][y2].pion == 0) {
-        printf("%s : %d-%d \n",jeu->plateau[x1][y1].pion == NOIR ? "Noir" : "Blanc",jeu->plateau[x1][y1].numero,jeu->plateau[x2][y2].numero);
-        jeu->plateau[x2][y2].pion = jeu->plateau[x1][y1].pion;
-        jeu->plateau[x2][y2].couleur = jeu->plateau[x1][y1].couleur;
-        jeu->plateau[x1][y1].pion = 0;
-        }
-    else if(jeu->plateau[x2][y2].pion == 1 && (jeu->plateau[x2][y2].couleur == BLANC || jeu->plateau[x2][y2].couleur == NOIR)){
-        printf("%s : %dx%d \n",jeu->plateau[x1][y1].pion == NOIR ? "Noir" : "Blanc",jeu->plateau[x1][y1].numero,jeu->plateau[x2][y2].numero);
-        jeu->plateau[x2][y2].pion = jeu->plateau[x1][y1].pion;
-        jeu->plateau[x2][y2].couleur = jeu->plateau[x1][y1].couleur;
-        jeu->plateau[x1][y1].pion = 0;
-    }
-
+void deplacer_pion (jeu_t * jeu , int x1,int y1,int x2,int y2){
+  if(jeu->plateau[x1][y1].pion){
+    jeu->plateau[x2][y2].pion = jeu->plateau[x1][y1].pion;
+    jeu->plateau[x2][y2].couleur = jeu->plateau[x1][y1].couleur;
+    jeu->plateau[x1][y1].pion = 0;
+  }
 }
 
 int compter_pions(int couleur,jeu_t *jeu) {
-
     int n = 0;
     for ( int i = 0; i < 10; i++)
     {
       for(int j = 0 ; j < 10 ; j++){
-        if(jeu->plateau[i][j].pion !=0 && jeu->plateau[i][j].couleur == couleur){
+        if(jeu->plateau[i][j].pion && jeu->plateau[i][j].couleur == couleur){
             n++;
         }
       }
@@ -205,42 +195,10 @@ int saisir_deplacement(char * deplacement, int * x1, int * y1, int * x2, int * y
     }
     if(mouvement == 2){
       printf("\nIl s'agit d'une capture.\n");
+      sscanf(deplacement, "%dx%d", &numero1, &numero2);
       if(verifier_capture(*jeu, numero1, numero2, 1)){
-        numero_coord(*jeu, numero1, x1, y1);
-        numero_coord(*jeu, numero2, x2, y2);
-        deplacer_pion(jeu, *x1, *y1, *x2, *y2);
-        if(*y1 > *y2){
-          if(jeu->plateau[*x1][*y1].couleur == NOIR){
-            *x1 = *x2;
-            *y1 = *y2;
-            *x2 = *x2 + 1;
-            *y2 = *y2 - 1;
-            return 0;
-          }
-          else if(jeu->plateau[*x1][*y1].couleur == BLANC){
-            *x1 = *x2;
-            *y1 = *y2;
-            *x2 = *x2 - 1;
-            *y2 = *y2 - 1;
-            return 0;
-          }
-        }
-        else if(*y2 > *y1){
-          if(jeu->plateau[*x1][*y1].couleur == NOIR){
-            *x1 = *x2;
-            *y1 = *y2;
-            *x2 = *x2 + 1;
-            *y2 = *y2 + 1;
-            return 0;
-          }
-          else if(jeu->plateau[*x1][*y1].couleur == BLANC){
-            *x1 = *x2;
-            *y1 = *y2;
-            *x2 = *x2 - 1;
-            *y2 = *y2 + 1;
-            return 0;
-          }
-        }
+        capturer(jeu, numero1, numero2, x1, y1, x2, y2);
+        return 0;
       }
       return 1;
     }
@@ -248,6 +206,40 @@ int saisir_deplacement(char * deplacement, int * x1, int * y1, int * x2, int * y
       printf("Il ne s'agit ni d'un déplacement ni d'une capture.\n");
       return 1;
     }
+}
+
+void capturer(jeu_t * jeu, int numero1, int numero2, int * x1, int * y1, int * x2, int * y2){
+  numero_coord(*jeu, numero1, x1, y1);
+  numero_coord(*jeu, numero2, x2, y2);
+  deplacer_pion(jeu, *x1, *y1, *x2, *y2);
+  if(*y1 > *y2){
+    if(jeu->plateau[*x1][*y1].couleur == NOIR){
+      *x1 = *x2;
+      *y1 = *y2;
+      *x2 = *x2 + 1;
+      *y2 = *y2 - 1;
+    }
+    else if(jeu->plateau[*x1][*y1].couleur == BLANC){
+      *x1 = *x2;
+      *y1 = *y2;
+      *x2 = *x2 - 1;
+      *y2 = *y2 - 1;
+    }
+  }
+  else if(*y2 > *y1){
+    if(jeu->plateau[*x1][*y1].couleur == NOIR){
+      *x1 = *x2;
+      *y1 = *y2;
+      *x2 = *x2 + 1;
+      *y2 = *y2 + 1;
+    }
+    else if(jeu->plateau[*x1][*y1].couleur == BLANC){
+      *x1 = *x2;
+      *y1 = *y2;
+      *x2 = *x2 - 1;
+      *y2 = *y2 + 1;
+    }
+  }
 }
 
 void numero_coord(jeu_t jeu, int numero, int * x, int * y){
@@ -307,11 +299,11 @@ int verifier_capture(jeu_t jeu, int numero1, int numero2, int affichage){
   }
   if(jeu.plateau[x1][y1].couleur == jeu.plateau[x2][y2].couleur){
     if(affichage){
-      printf("Impossible : Un pion ne peut pas captuer un pion de la même couleur.\n");
+      printf("Impossible : Un pion ne peut pas capturer un pion de la même couleur.\n");
     }
     return 0;
   }
-  if(jeu.plateau[x1][y1].pion){
+  if(jeu.plateau[x1][y1].pion && jeu.plateau[x2][y2].pion){
     if(jeu.plateau[x1][y1].couleur == BLANC && jeu.tour == 1 || jeu.plateau[x1][y1].couleur == NOIR && jeu.tour == 0){
         if(jeu.plateau[x1][y1].couleur == NOIR){
           if((x2 - x1 == 1) && (y2 - y1 == 1 || y2 - y1 == -1) && (x1 != x2) && (y1 != y2) && (x1 != -1) && (y1 != -1) && (x2 != -1) && (y2 != -1)){
@@ -453,37 +445,71 @@ int pion_peut_capturer(jeu_t jeu, int numero, int * capture){
   int x, y;
   numero_coord(jeu, numero, &x, &y);
   int capture1, capture2;
-  if(jeu.plateau[x][y].couleur == NOIR){
-    coord_numero(jeu, x + 1, y - 1, &capture1);
-    coord_numero(jeu, x + 1, y + 1, &capture2);
-  }
-  else if(jeu.plateau[x][y].couleur == NOIR){
-    coord_numero(jeu, x - 1, y - 1, &capture1);
-    coord_numero(jeu, x - 1, y + 1, &capture2);
-  }
-  if(verifier_capture(jeu, numero, capture1, 0)){
-    *capture = capture1;
-    return 1;
-  }
-  else if(verifier_capture(jeu, numero, capture2, 0)){
-    *capture = capture2;
-    return 1;
+  if(jeu.plateau[x][y].pion){
+    if(jeu.plateau[x][y].couleur == NOIR){
+      coord_numero(jeu, x + 1, y - 1, &capture1);
+      coord_numero(jeu, x + 1, y + 1, &capture2);
+    }
+    else if(jeu.plateau[x][y].couleur == BLANC){
+      coord_numero(jeu, x - 1, y - 1, &capture1);
+      coord_numero(jeu, x - 1, y + 1, &capture2);
+    }
+    if(verifier_capture(jeu, numero, capture1, 0)){
+      *capture = capture1;
+      return 1;
+    }
+    else if(verifier_capture(jeu, numero, capture2, 0)){
+      *capture = capture2;
+      return 1;
+    }
   }
   return 0;
 }
 
 int capture_est_possible(jeu_t jeu, int * numero1, int * numero2){
+  int n = 0;
+  couple_t bourreaux[50];
   for(int i = 0; i < 10; i++){
     for(int j = 0; j < 10; j++){
       if(jeu.plateau[i][j].pion){
         coord_numero(jeu, i, j, numero1);
         if(pion_peut_capturer(jeu, *numero1, numero2)){
           printf("Le pion de la case %d peut capturer celui de la case %d.\n", *numero1, *numero2);
-          return 1;
+          bourreaux[n].a = *numero1;
+          bourreaux[n].b = *numero2;
+          n++;
         }
       }
     }
   }
-  printf("Aucune capture n'est possible.\n");
+  if(n == 0){
+    printf("Aucune capture n'est possible.\n");
+    return 0;
+  }
+  else if(n > 0){
+    choisir_capture(jeu, bourreaux, n, numero1);
+    return 1;
+  }
+}
+
+int choisir_capture(jeu_t jeu, couple_t bourreaux[], int taille, int * numero){
+  int choix;
+  while(1){
+    printf("\nChoisit le ptn de pion qui doit capturer : ");
+    scanf("%d", &choix);
+    if(pion_appartient(jeu, bourreaux, taille, choix)){
+      *numero = choix;
+      return 1;
+    }
+  }
+  return 0;
+}
+
+int pion_appartient(jeu_t jeu, couple_t bourreaux[], int taille, int numero){
+  for(int i = 0; i < taille; i++){
+    if(bourreaux[i].a == numero){
+      return 1;
+    }
+  }
   return 0;
 }
