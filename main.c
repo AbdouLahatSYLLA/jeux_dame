@@ -11,8 +11,7 @@ int main(int argc, char ** argv){
   char deplacement[100];
   int numero1, numero2;
   while(jeu.en_cours){
-    //capture_est_possible(jeu, &numero1, &numero2)
-    if(capture_est_possible(jeu, &numero1, &numero2)){
+    if(capture_est_possible(jeu, &numero1, &numero2,jeu.tour)){
       capturer(&jeu, numero1, numero2, &x1, &y1, &x2, &y2);
       deplacer_pion(&jeu,x1,y1,x2,y2);
     }

@@ -207,36 +207,42 @@ int saisir_deplacement(char * deplacement, int * x1, int * y1, int * x2, int * y
       return 1;
     }
 }
-
 void capturer(jeu_t * jeu, int numero1, int numero2, int * x1, int * y1, int * x2, int * y2){
   numero_coord(*jeu, numero1, x1, y1);
   numero_coord(*jeu, numero2, x2, y2);
   deplacer_pion(jeu, *x1, *y1, *x2, *y2);
-  if(*y1 > *y2){
-    if(jeu->plateau[*x1][*y1].couleur == NOIR){
-      *x1 = *x2;
-      *y1 = *y2;
-      *x2 = *x2 + 1;
-      *y2 = *y2 - 1;
-    }
-    else if(jeu->plateau[*x1][*y1].couleur == BLANC){
+  /*Montée*/
+  if(*x1 > *x2){
+    //Gauche
+    if( *y1 > *y2){
       *x1 = *x2;
       *y1 = *y2;
       *x2 = *x2 - 1;
       *y2 = *y2 - 1;
     }
-  }
-  else if(*y2 > *y1){
-    if(jeu->plateau[*x1][*y1].couleur == NOIR){
+    //Droite
+    else {
       *x1 = *x2;
       *y1 = *y2;
-      *x2 = *x2 + 1;
+      *x2 = *x2 - 1;
       *y2 = *y2 + 1;
     }
-    else if(jeu->plateau[*x1][*y1].couleur == BLANC){
+  }
+
+    /*Descente*/
+  else if(*x2 > *x1){
+        //Gauche
+    if(*y1 > *y2){
       *x1 = *x2;
       *y1 = *y2;
-      *x2 = *x2 - 1;
+      *x2 = *x2 + 1;
+      *y2 = *y2 - 1;
+    }
+        //Droite
+    else {
+      *x1 = *x2;
+      *y1 = *y2;
+      *x2 = *x2 + 1;
       *y2 = *y2 + 1;
     }
   }
@@ -265,7 +271,7 @@ int verifier_deplacement(jeu_t jeu, int numero1, int numero2){
       if(jeu.plateau[x2][y2].pion == 0){
         if(jeu.plateau[x1][y1].couleur == NOIR){
           if((x2 - x1 == 1) && (y2 - y1 == 1 || y2 - y1 == -1) && (x1 != x2) && (y1 != y2) && (x1 != -1) && (y1 != -1) && (x2 != -1) && (y2 != -1)){
-            printf("Possible.\n\n");
+            printf("Possible.\n");
             return 1;
           }
           printf("Impossible : Le pion ne peut se déplacer que d'une case en diagonale.\n");
@@ -273,7 +279,7 @@ int verifier_deplacement(jeu_t jeu, int numero1, int numero2){
         }
         else if(jeu.plateau[x1][y1].couleur == BLANC){
           if((x1 - x2 == 1) && (y2 - y1 == 1 || y2 - y1 == -1) && (x1 != x2) && (y1 != y2) && (x1 != -1) && (y1 != -1) && (x2 != -1) && (y2 != -1)){
-            printf("Possible.\n\n");
+            printf("Possible.\n");
             return 1;
           }
           printf("Impossible : Le pion ne peut se déplacer que d'une case en diagonale.\n");
@@ -297,142 +303,100 @@ int verifier_capture(jeu_t jeu, int numero1, int numero2, int affichage){
   if(affichage){
     putchar('\n');
   }
+
   if(jeu.plateau[x1][y1].couleur == jeu.plateau[x2][y2].couleur){
     if(affichage){
       printf("Impossible : Un pion ne peut pas capturer un pion de la même couleur.\n");
     }
     return 0;
   }
-  if(jeu.plateau[x1][y1].pion && jeu.plateau[x2][y2].pion){
-    if(jeu.plateau[x1][y1].couleur == BLANC && jeu.tour == 1 || jeu.plateau[x1][y1].couleur == NOIR && jeu.tour == 0){
-        if(jeu.plateau[x1][y1].couleur == NOIR){
-          if((x2 - x1 == 1) && (y2 - y1 == 1 || y2 - y1 == -1) && (x1 != x2) && (y1 != y2) && (x1 != -1) && (y1 != -1) && (x2 != -1) && (y2 != -1)){
-            if(y1 > y2){
-              if(jeu.plateau[x1][y1].couleur == NOIR){
-                if(jeu.plateau[x2 + 1][y2 - 1].pion == 0){
-                  if(affichage){
-                    printf("Possible.\n\n");
-                  }
-                  return 1;
-                }
-                if(affichage){
-                  printf("Impossible : L'espace derrière le pion à capturer n'est pas vide.\n");
-                }
-                return 0;
-              }
-              else if(jeu.plateau[x1][y1].couleur == BLANC){
-                if(jeu.plateau[x2 - 1][y2 - 1].pion == 0){
-                  if(affichage){
-                    printf("Possible.\n\n");
-                  }
-                  return 1;
-                }
-                if(affichage){
-                  printf("Impossible : L'espace derrière le pion à capturer n'est pas vide.\n");
-                }
-                return 0;
-              }
-            }
-            else if(y2 > y1){
-              if(jeu.plateau[x1][y1].couleur == NOIR){
-                if(jeu.plateau[x2 + 1][y2 + 1].pion == 0){
-                  if(affichage){
-                    printf("Possible.\n\n");
-                  }
-                  return 1;
-                }
-                if(affichage){
-                  printf("Impossible : L'espace derrière le pion à capturer n'est pas vide.\n");
-                }
-                return 0;
-              }
-              else if(jeu.plateau[x1][y1].couleur == BLANC){
-                if(jeu.plateau[x2 - 1][y2 + 1].pion == 0){
-                  if(affichage){
-                    printf("Possible.\n\n");
-                  }
-                  return 1;
-                }
-                if(affichage){
-                  printf("Impossible : L'espace derrière le pion à capturer n'est pas vide.\n");
-                }
-                return 0;
-              }
-            }
-          }
-          if(affichage){
-            printf("Impossible : Le pion ne peut se déplacer que d'une case en diagonale.\n");
-          }
-          return 0;
-        }
-        else if(jeu.plateau[x1][y1].couleur == BLANC){
-          if((x1 - x2 == 1) && (y2 - y1 == 1 || y2 - y1 == -1) && (x1 != x2) && (y1 != y2) && (x1 != -1) && (y1 != -1) && (x2 != -1) && (y2 != -1)){
-            if(y1 > y2){
-              if(jeu.plateau[x1][y1].couleur == NOIR){
-                if(jeu.plateau[x2 + 1][y2 - 1].pion == 0){
-                  if(affichage){
-                    printf("Possible.\n\n");
-                  }
-                  return 1;
-                }
-                if(affichage){
-                  printf("Impossible : L'espace derrière le pion à capturer n'est pas vide.\n");
-                }
-                return 0;
-              }
-              else if(jeu.plateau[x1][y1].couleur == BLANC){
-                if(jeu.plateau[x2 - 1][y2 - 1].pion == 0){
-                  if(affichage){
-                    printf("Possible.\n\n");
-                  }
-                  return 1;
-                }
-                if(affichage){
-                  printf("Impossible : L'espace derrière le pion à capturer n'est pas vide.\n");
-                }
-                return 0;
-              }
-            }
-            else if(y2 > y1){
-              if(jeu.plateau[x1][y1].couleur == NOIR){
-                if(jeu.plateau[x2 + 1][y2 + 1].pion == 0){
-                  if(affichage){
-                    printf("Possible.\n\n");
-                  }
-                  return 1;
-                }
-                if(affichage){
-                  printf("Impossible : L'espace derrière le pion à capturer n'est pas vide.\n");
-                }
-                return 0;
-              }
-              else if(jeu.plateau[x1][y1].couleur == BLANC){
-                if(jeu.plateau[x2 - 1][y2 + 1].pion == 0){
-                  if(affichage){
-                    printf("Possible.\n\n");
-                  }
-                  return 1;
-                }
-                if(affichage){
-                  printf("Impossible : L'espace derrière le pion à capturer n'est pas vide.\n");
-                }
-                return 0;
-              }
-            }
-          }
-          if(affichage){
-            printf("Impossible : Le pion ne peut se déplacer que d'une case en diagonale.\n");
-          }
-          return 0;
-        }
-    }
+
+  if(jeu.plateau[x1][y1].couleur != jeu.tour){
     if(affichage){
       printf("Impossible : Le pion à déplacer n'est pas de la bonne couleur.\n");
-    }
+      }
     return 0;
-  }
-  if(affichage){
+   }
+
+   if(jeu.plateau[x1][y1].pion == 0){
+    if(affichage){
     printf("Impossible : Pas de pion sur la case de départ.\n");
+      }
+    return 0;
+   }
+
+  if(jeu.plateau[x1][y1].pion && jeu.plateau[x2][y2].pion){
+    if(jeu.plateau[x1][y1].couleur == jeu.tour){
+        if(jeu.plateau[x2][y2].couleur != jeu.tour ){
+          if((abs(x2 - x1) == 1) && (abs(y2 - y1) == 1) ){
+         if (x2 > x1)
+         {
+           if(y1 > y2){
+              if(jeu.plateau[x2 + 1][y2 - 1].pion == 0){
+                    if(affichage){
+                    printf("Possible.\n");
+                  }
+                return 1;
+              }
+                if(affichage){
+                   printf("Impossible : L'espace derrière le pion à capturer n'est pas vide.\n");
+                 }
+                return 0; 
+
+          }
+           else if (y1 < y2)
+           {
+                if(jeu.plateau[x2 + 1][y2 + 1].pion == 0){
+                    if(affichage){
+                    printf("Possible.\n");
+                  }
+                return 1;
+              }
+                if(affichage){
+                   printf("Impossible : L'espace derrière le pion à capturer n'est pas vide.\n");
+                 }
+                  return 0;
+
+
+          }
+
+        }
+           
+         
+         else if (x1 > x2)
+         {
+           if(y1 > y2){
+               if(jeu.plateau[x2 - 1][y2 - 1].pion == 0){
+                    if(affichage){
+                    printf("Possible.\n");
+                    }
+                    return 1;
+                }
+                if(affichage){
+                   printf("Impossible : L'espace derrière le pion à capturer n'est pas vide.\n");
+                   }
+                return 0;
+           }
+           else if (y1 < y2)
+           {
+              if(jeu.plateau[x2 - 1][y2 + 1].pion == 0){
+                    if(affichage){
+                    printf("Possible.\n");
+                  }
+                return 1;
+              }
+                if(affichage){
+                   printf("Impossible : L'espace derrière le pion à capturer n'est pas vide.\n");
+                 }
+                  return 0;
+           }
+         }
+        }
+
+        }
+        
+   }
+    
   }
   return 0;
 }
@@ -441,61 +405,77 @@ void coord_numero(jeu_t jeu, int x, int y, int * numero){
   *numero = jeu.plateau[x][y].numero;
 }
 
-int pion_peut_capturer(jeu_t jeu, int numero, int * capture){
+int pion_peut_capturer(jeu_t jeu, int numero,int tour,couple_t bourreaux[],int *n){
   int x, y;
+  int cp = 0;
   numero_coord(jeu, numero, &x, &y);
-  int capture1, capture2;
-  if(jeu.plateau[x][y].pion){
-    if(jeu.plateau[x][y].couleur == NOIR){
-      coord_numero(jeu, x + 1, y - 1, &capture1);
-      coord_numero(jeu, x + 1, y + 1, &capture2);
-    }
-    else if(jeu.plateau[x][y].couleur == BLANC){
-      coord_numero(jeu, x - 1, y - 1, &capture1);
-      coord_numero(jeu, x - 1, y + 1, &capture2);
-    }
-    if(verifier_capture(jeu, numero, capture1, 0)){
-      *capture = capture1;
-      return 1;
-    }
-    else if(verifier_capture(jeu, numero, capture2, 0)){
-      *capture = capture2;
-      return 1;
-    }
+  int captures[4];
+  if(jeu.plateau[x][y].pion && (jeu.plateau[x][y].couleur == tour)){
+      coord_numero(jeu, x + 1, y - 1, &captures[0]);
+      coord_numero(jeu, x + 1, y + 1, &captures[1]);
+      coord_numero(jeu, x - 1, y - 1, &captures[2]);
+      coord_numero(jeu, x - 1, y + 1, &captures[3]);
+
+      for (int i = 0; i < 4; i++)
+      {
+       
+        if(verifier_capture(jeu, numero, captures[i], 0)){
+          bourreaux[*n].a = numero;
+          bourreaux[*n].b = captures[i];
+          printf("Le pion de la case %d peut capturer celui de la case %d.\n",  bourreaux[*n].a,  bourreaux[*n].b);
+          *n = *n + 1;
+          cp++;
+        }
+      }
+      
   }
-  return 0;
+  else
+    return 0;
+
+  return cp;
 }
 
-int capture_est_possible(jeu_t jeu, int * numero1, int * numero2){
-  int n = 0;
+int capture_est_possible(jeu_t jeu, int * numero1, int * numero2,int tour){
+  int cp = 0;
+  int n=0;
   couple_t bourreaux[50];
   for(int i = 0; i < 10; i++){
     for(int j = 0; j < 10; j++){
-      if(jeu.plateau[i][j].pion){
+      if(jeu.plateau[i][j].pion &&(jeu.plateau[i][j].couleur == tour) ){
         coord_numero(jeu, i, j, numero1);
-        if(pion_peut_capturer(jeu, *numero1, numero2)){
-          printf("Le pion de la case %d peut capturer celui de la case %d.\n", *numero1, *numero2);
-          bourreaux[n].a = *numero1;
-          bourreaux[n].b = *numero2;
-          n++;
+        if(pion_peut_capturer(jeu, *numero1,tour,bourreaux,&n)){
+                ;
         }
       }
     }
   }
+  
+  
   if(n == 0){
     printf("Aucune capture n'est possible.\n");
     return 0;
   }
   else if(n > 0){
-    choisir_capture(jeu, bourreaux, n, numero1);
+    int choix;
+    puts("Veux-tu capturer ? 0:Non| Oui sinon");
+    scanf("%d",&choix);
+    if(choix == 0 ) {
+      return 0;
+    }
+    else{
+    afficher_couples(bourreaux,n);
+    puts("Choisis un pion de depart");
+    scanf("%d",numero1);
+    choisir_capture(jeu, bourreaux, n, numero2);
     return 1;
+    }
   }
 }
 
 int choisir_capture(jeu_t jeu, couple_t bourreaux[], int taille, int * numero){
   int choix;
   while(1){
-    printf("\nChoisit le ptn de pion qui doit capturer : ");
+    printf("\nChoisit le ptn de pion qui doit a  capturer : ");
     scanf("%d", &choix);
     if(pion_appartient(jeu, bourreaux, taille, choix)){
       *numero = choix;
@@ -507,9 +487,17 @@ int choisir_capture(jeu_t jeu, couple_t bourreaux[], int taille, int * numero){
 
 int pion_appartient(jeu_t jeu, couple_t bourreaux[], int taille, int numero){
   for(int i = 0; i < taille; i++){
-    if(bourreaux[i].a == numero){
+    if(bourreaux[i].b == numero){
       return 1;
     }
   }
   return 0;
+}
+
+void afficher_couples(couple_t bourreaux[], int size){
+for ( int i = 0; i < size; i++)
+printf("%dx%d ",bourreaux[i].a,bourreaux[i].b);
+
+putchar('\n');
+
 }
