@@ -45,4 +45,5 @@ int capture_est_possible(jeu_t jeu, int * numero1, int * numero2,int tour);
 int choisir_capture(jeu_t jeu, couple_t bourreaux[], int taille, int * numero);
 int pion_appartient(jeu_t jeu, couple_t bourreaux[], int taille, int numero);
 void afficher_couples(couple_t bourreaux[], int size);
+
 #endif
