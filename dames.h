@@ -40,10 +40,10 @@ void numero_coord(jeu_t jeu, int numero, int * x, int * y);
 void coord_numero(jeu_t jeu, int x, int y, int * numero);
 int verifier_deplacement(jeu_t jeu, int numero1, int numero2);
 int verifier_capture(jeu_t jeu, int numero1, int numero2, int affichage);
-int pion_peut_capturer(jeu_t jeu, int numero,int tour,couple_t bourreaux[],int *n);
-int capture_est_possible(jeu_t jeu, int * numero1, int * numero2,int tour);
+int pion_peut_capturer(jeu_t jeu, int numero, int * capture);
+int capture_est_possible(jeu_t jeu, int * numero1, int * numero2);
 int choisir_capture(jeu_t jeu, couple_t bourreaux[], int taille, int * numero);
 int pion_appartient(jeu_t jeu, couple_t bourreaux[], int taille, int numero);
-void afficher_couples(couple_t bourreaux[], int size);
+void faire_dames(jeu_t* jeu,int couleur);
 
 #endif
