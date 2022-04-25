@@ -25,9 +25,12 @@ typedef struct{
 } jeu_t;
 
 typedef struct{
-  int a;
-  int b;
-} couple_t;
+  char t[10];
+} tabc_t;
+
+typedef struct{
+  int t[10];
+} tabi_t;
 
 void initialiser_jeu(jeu_t * jeu);
 void verifier_dame(jeu_t * jeu);
@@ -39,11 +42,11 @@ void capturer(jeu_t * jeu, int numero1, int numero2, int * x1, int * y1, int * x
 void numero_coord(jeu_t jeu, int numero, int * x, int * y);
 void coord_numero(jeu_t jeu, int x, int y, int * numero);
 int verifier_deplacement(jeu_t jeu, int numero1, int numero2);
-int verifier_capture(jeu_t jeu, int numero1, int numero2, int affichage);
+int verifier_capture(jeu_t jeu, int numero1, int numero2);
 int pion_peut_capturer(jeu_t jeu, int numero, int * capture);
 int capture_est_possible(jeu_t jeu, int * numero1, int * numero2);
-int choisir_capture(jeu_t jeu, couple_t bourreaux[], int taille, int * numero);
-int pion_appartient(jeu_t jeu, couple_t bourreaux[], int taille, int numero);
-void faire_dames(jeu_t* jeu,int couleur);
+int choisir_capture(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero);
+int capture_appartient(jeu_t jeu, tabi_t bourreaux[], int taille, char capture[]);
+void faire_dames(jeu_t * jeu);
 
 #endif

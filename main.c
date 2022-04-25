@@ -1,13 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-/* bibliothèque standard unix */
-#include <unistd.h> /* close, read, write */
-#include <sys/types.h>
-#include <sys/socket.h>
-/* spécifique à internet */
-#include <arpa/inet.h> /* inet_pton */
-#include <pthread.h>
 #include "dames.h"
 
 int main(int argc, char ** argv){
@@ -18,29 +10,28 @@ int main(int argc, char ** argv){
   jeu.tour = BLANC;
   char deplacement[100];
   int numero1, numero2;
-  /* 1. Création d'une socket tcp ipv6 */
-	int sock = socket(AF_INET6, SOCK_DGRAM, 0);
-	if (sock < 0) {
-		perror("socket");
-		exit(2);
-	}
-  
   while(jeu.en_cours){
-    //capture_est_possible(jeu, &numero1, &numero2)
     if(capture_est_possible(jeu, &numero1, &numero2)){
       capturer(&jeu, numero1, numero2, &x1, &y1, &x2, &y2);
       deplacer_pion(&jeu,x1,y1,x2,y2);
+      coord_numero(jeu, x2, y2, &numero1);
+      while(pion_peut_capturer(jeu, numero1, &numero2)){
+        capturer(&jeu, numero1, numero2, &x1, &y1, &x2, &y2);
+        deplacer_pion(&jeu,x1,y1,x2,y2);
+        coord_numero(jeu, x2, y2, &numero1);
+      }
     }
     else{
       while((move = saisir_deplacement(deplacement, &x1, &y1, &x2, &y2, jeu.tour, &jeu)));
       deplacer_pion(&jeu,x1,y1,x2,y2);
     }
+    faire_dames(&jeu);
     afficher_jeu(jeu);
     jeu.nb_coups++;
     jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
     pion_noirs = compter_pions(NOIR,&jeu);
     pion_blancs = compter_pions(BLANC,&jeu);
-    printf("%d\n",jeu.nb_coups);
+    printf("Nb de coups : %d.\n",jeu.nb_coups);
     if(pion_noirs == 0){
       printf("Victoire des blancs\n");
       jeu.en_cours = 0;
@@ -56,9 +47,6 @@ int main(int argc, char ** argv){
       jeu.en_cours = 0;
       break;
     }
-
-    faire_dames(&jeu,NOIR);
-    faire_dames(&jeu,BLANC);
   }
   return 0;
 }
