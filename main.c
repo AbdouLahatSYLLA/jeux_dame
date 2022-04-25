@@ -4,12 +4,13 @@
 
 int main(int argc, char ** argv){
   jeu_t jeu;
-  int x1,y1,x2,y2,pion_noirs,pion_blancs, move ;
+  int x1,y1,x2,y2,pion_noirs,pion_blancs, move;
   initialiser_jeu(&jeu);
   afficher_jeu(jeu);
   jeu.tour = BLANC;
   char deplacement[100];
   int numero1, numero2;
+  
   while(jeu.en_cours){
     if(capture_est_possible(jeu, &numero1, &numero2)){
       capturer(&jeu, numero1, numero2, &x1, &y1, &x2, &y2);

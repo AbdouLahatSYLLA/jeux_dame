@@ -1,10 +1,8 @@
 #ifndef __DAMES__
 #define __DAMES__
-
 #define NOIR 0
 #define BLANC 1
 #define EGALITE 2
-
 typedef struct{
   int pion;
   int couleur;
