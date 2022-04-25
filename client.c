@@ -12,7 +12,7 @@
 #include "dames.h"
 
 #define PORT_INCP 1234
-
+char deplacement[100];
 int main(int argc, char *argv[])
 {
 
@@ -39,12 +39,16 @@ int main(int argc, char *argv[])
 
 	/* 4. Échange avec le serveur */
 	/* 4.1 Construction de la requête INCP */
-    uint32_t enc,nbc,tour;
-    read(sock,&enc,sizeof(uint32_t));
-    read(sock,&tour,sizeof(uint32_t));
-    read(sock,&nbc,sizeof(uint32_t));
-	recevoir_cases(&jeu,sock);
-    afficher_jeu(jeu);
+    
+	while (jeu.en_cours)
+	{
+		recevoir_jeu(&jeu,sock);
+		afficher_jeu(jeu);
+		jouer(&jeu,deplacement);
+		afficher_jeu(jeu);
+		envoyer_jeu(&jeu,sock);
+	}
+	
 	close(sock);
 	return 0;
 }

@@ -21,7 +21,6 @@ typedef struct{
 sem_t attaquant;
 sem_t defense;
 char deplacement[100];
-int numero1, numero2;
 void * joueur2(void * arg);  
 int main()
 {
@@ -53,28 +52,55 @@ int main()
 		perror("listen");
 		exit(2);
 	}
+	sem_init(&defense,0,0);
+	sem_init(&attaquant,0,1);
 
 	/* 5. Attente passive d'une connection. */
 	int sock_echange = accept(sock, NULL, NULL);
      jeu_t * jeu = malloc(sizeof(jeu_t));
     initialiser_jeu(jeu);
+	  jeu->tour = BLANC;
+
     client * att = malloc(sizeof(client));
     att->jeu= jeu;
-    att->sock = sock;
-    uint32_t enc,tour,nbc;
-      enc = (uint32_t) jeu->en_cours;
-      tour = 1;
-      nbc = (uint32_t) jeu->nb_coups; 
-      write(sock_echange,&enc,sizeof(uint32_t));
-      write(sock_echange,&tour,sizeof(uint32_t));
-      write(sock_echange,&nbc,sizeof(uint32_t));
-      envoyer_cases(jeu,sock_echange);
+    att->sock = sock_echange;
+    pthread_create(&th,NULL,joueur2,att);
+	while (jeu->en_cours)
+	{
+		afficher_jeu(*jeu);
+		sem_wait(&attaquant);
+		jouer(jeu,deplacement);
+		jeu->nb_coups++;
+	    jeu->tour = jeu->nb_coups % 2 == 0 ? BLANC : NOIR;
+		envoyer_jeu(jeu,sock_echange);
+		sem_post(&defense);
+	}
+	pthread_join(th,NULL);
 
 	close(sock_echange);
 	close(sock);
     
 	return 0;
 }
+void * joueur2(void * arg){
+	client * clt = arg;
+	while (clt->jeu->en_cours)
+	{
+		sem_wait(&defense);
+		recevoir_jeu(clt->jeu,clt->sock);
+		clt->jeu->nb_coups++;
+	    clt->jeu->tour = clt->jeu->nb_coups % 2 == 0 ? BLANC : NOIR;
+		afficher_jeu(*clt->jeu);
+		sem_post(&attaquant);	
+
+	
+	
+	}
+	
+      
+	return NULL;
+}
+
 
   
 

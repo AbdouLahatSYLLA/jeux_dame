@@ -13,8 +13,20 @@
 #include <semaphore.h>
 #include "reseau.h"
 
- void envoyer_cases(jeu_t *jeu , int sock){
-     uint32_t pion,couleur,dame,numero,enc;
+ void envoyer_jeu(jeu_t *jeu , int sock){
+     uint32_t pion,couleur,dame,numero,enc,nbc,tour;
+  
+     enc = jeu->en_cours;
+      tour = jeu->tour;
+      nbc = jeu->nb_coups;
+      enc= htonl(enc);
+      tour = htonl(tour);
+      nbc= htonl(nbc);
+
+    write(sock,&enc,sizeof(uint32_t));
+    write(sock,&tour,sizeof(uint32_t));
+    write(sock,&nbc,sizeof(uint32_t));
+
      for ( int i = 0; i < 10; i++)
      {
          for (int j = 0; j < 10; j++)
@@ -41,8 +53,16 @@
 
 
 
-  void recevoir_cases(jeu_t  *jeu , int sock){
-     uint32_t pion,couleur,dame,numero;
+  void recevoir_jeu(jeu_t  *jeu , int sock){
+     uint32_t pion,couleur,dame,numero,enc,nbc,tour;
+    
+    read(sock,&enc,sizeof(uint32_t));
+    read(sock,&tour,sizeof(uint32_t));
+    read(sock,&nbc,sizeof(uint32_t));
+    jeu->en_cours= ntohl(enc);
+    jeu->nb_coups = ntohl(nbc);
+    jeu->tour = ntohl(tour);
+
      for ( int i = 0; i < 10; i++)
      {
          for (int j = 0; j < 10; j++)
@@ -65,4 +85,24 @@
          
      }
      
+ }
+
+ void jouer(jeu_t * jeu,char * deplacement){
+     int x1,x2,y1,y2,numero1,numero2,move;
+    if(capture_est_possible(*jeu, &numero1, &numero2)){
+      capturer(jeu, numero1, numero2, &x1, &y1, &x2, &y2);
+      deplacer_pion(jeu,x1,y1,x2,y2);
+      coord_numero(*jeu, x2, y2, &numero1);
+      while(pion_peut_capturer(*jeu, numero1, &numero2)){
+        capturer(jeu, numero1, numero2, &x1, &y1, &x2, &y2);
+        deplacer_pion(jeu,x1,y1,x2,y2);
+        coord_numero(*jeu, x2, y2, &numero1);
+      }
+    }
+
+    else{
+      while((move = saisir_deplacement(deplacement, &x1, &y1, &x2, &y2, jeu->tour, jeu)));
+      deplacer_pion(jeu,x1,y1,x2,y2);
+    }
+    
  }
