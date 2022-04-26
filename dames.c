@@ -206,6 +206,7 @@ int saisir_deplacement(char * deplacement, int * x1, int * y1, int * x2, int * y
       printf("Il ne s'agit ni d'un déplacement ni d'une capture.\n");
       return 1;
     }
+    return 1;
 }
 
 void capturer(jeu_t * jeu, int numero1, int numero2, int * x1, int * y1, int * x2, int * y2){
@@ -389,6 +390,7 @@ int capture_est_possible(jeu_t jeu, int * numero1, int * numero2){
     choisir_capture(jeu, bourreaux, n, numero1);
     return 1;
   }
+  return 1;
 }
 
 int choisir_capture(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero){
@@ -397,7 +399,7 @@ int choisir_capture(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero){
   putchar('\n');
   while(1){
     printf("Entrer la capture à effectuer : ");
-    scanf("%s", &choix);
+    scanf("%s", choix);
     if(capture_appartient(jeu, bourreaux, taille, choix)){
       sscanf(choix, "%dx%d", numero, &poubelle);
       return 1;
@@ -430,4 +432,32 @@ void faire_dames(jeu_t * jeu){
     if(jeu->plateau[i][j].couleur == couleur)
       jeu->plateau[i][j].dame = 1;
   }
+}
+int test_deplace_dames(jeu_t  jeu,int numero1, int numero2 ) {
+  int x1, y1, x2, y2;
+  numero_coord(jeu, numero1, &x1, &y1);
+  numero_coord(jeu, numero2, &x2, &y2);
+  if(jeu.plateau[x1][y1].dame != 1){
+    printf("pion %d n est pas une dame \n",numero1 );
+    return -1;
+  }
+  while(x1!=x2 || y1!= y2) {
+    if(x2>x1)
+      x1++ ;
+    else
+      x1-- ;
+    if(y2>y1)
+      y1++ ;
+    else
+      y1-- ;
+    if(jeu.plateau[x1][y1].pion == 0) {
+      printf("%c%d n’est pas vide\n",y1+ 'a',x1+1);
+      return -1;
+    }
+  }
+  return 1;
+}
+
+void deplacer_dame (jeu_t * jeu , int x1,int y1,int x2,int y2){
+
 }
