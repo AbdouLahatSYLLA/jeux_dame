@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "dames.h"
+#include <stdint.h>
+
 /* bibliothèque standard unix */
 #include <unistd.h> /* close, read, write */
 #include <sys/types.h>
@@ -16,9 +18,9 @@
  void envoyer_jeu(jeu_t *jeu , int sock){
      uint32_t pion,couleur,dame,numero,enc,nbc,tour;
   
-     enc = jeu->en_cours;
-      tour = jeu->tour;
-      nbc = jeu->nb_coups;
+      enc = (uint32_t) jeu->en_cours;
+      tour = (uint32_t) jeu->tour;
+      nbc = (uint32_t) jeu->nb_coups;
       enc= htonl(enc);
       tour = htonl(tour);
       nbc= htonl(nbc);
@@ -31,10 +33,10 @@
      {
          for (int j = 0; j < 10; j++)
          {
-             pion =jeu->plateau[i][j].pion;
-             couleur = jeu->plateau[i][j].couleur;
-             dame = jeu->plateau[i][j].dame;
-             numero =jeu->plateau[i][j].numero;
+             pion = (uint32_t) jeu->plateau[i][j].pion;
+             couleur = (uint32_t) jeu->plateau[i][j].couleur;
+             dame = (uint32_t)  jeu->plateau[i][j].dame;
+             numero = (uint32_t) jeu->plateau[i][j].numero;
              pion = htonl(pion);
              couleur = htonl(couleur);
              dame = htonl(dame);
@@ -58,9 +60,9 @@
     read(sock,&enc,sizeof(uint32_t));
     read(sock,&tour,sizeof(uint32_t));
     read(sock,&nbc,sizeof(uint32_t));
-    jeu->en_cours= ntohl(enc);
-    jeu->nb_coups = ntohl(nbc);
-    jeu->tour = ntohl(tour);
+    jeu->en_cours= (int) ntohl(enc);
+    jeu->nb_coups = (int) ntohl(nbc);
+    jeu->tour = (int) ntohl(tour);
 
      for ( int i = 0; i < 10; i++)
      {
@@ -68,7 +70,7 @@
          {
                
                 read(sock,&pion,sizeof(uint32_t));
-                read(sock,&couleur,sizeof(u_int32_t));
+                read(sock,&couleur,sizeof(uint32_t));
                 read(sock,&dame,sizeof(uint32_t));
                 read(sock,&numero,sizeof(uint32_t));
                  pion = ntohl(pion);
@@ -76,10 +78,10 @@
              dame = ntohl(dame);
              numero =ntohl(numero);
              
-                 jeu->plateau[i][j].pion = pion;
-                jeu->plateau[i][j].couleur= couleur;
-                jeu->plateau[i][j].dame= dame;
-                jeu->plateau[i][j].numero= numero;
+                 jeu->plateau[i][j].pion = (int)  pion;
+                jeu->plateau[i][j].couleur= (int)  couleur;
+                jeu->plateau[i][j].dame= (int)  dame;
+                jeu->plateau[i][j].numero= (int) numero;
          }
          
      }

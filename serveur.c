@@ -17,7 +17,7 @@ typedef struct{
     int sock;
 }client;
 
-#define PORT_INCP 1234
+#define PORT_INCP 7777
 sem_t attaquant;
 sem_t defense;
 char deplacement[100];
@@ -38,8 +38,6 @@ int main()
 				  .sin_addr.s_addr = htonl(INADDR_ANY) };
 	/* Optionnel : faire en sorte de pouvoir réutiliser l'adresse sans
 	 * attendre après la fin du serveur. */
-	int opt = 1;
-	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(int));
 
 	/* 3. Attacher la socket d'écoute à l'adresse */
 	if (bind(sock, (struct sockaddr *) &sa, sizeof(sa)) < 0) {
@@ -59,10 +57,10 @@ int main()
 	int sock_echange = accept(sock, NULL, NULL);
      jeu_t * jeu = malloc(sizeof(jeu_t));
     initialiser_jeu(jeu);
-	  jeu->tour = BLANC;
+	jeu->tour = BLANC;
 
     client * att = malloc(sizeof(client));
-    att->jeu= jeu;
+    att->jeu = jeu;
     att->sock = sock_echange;
     pthread_create(&th,NULL,joueur2,att);
 	while (jeu->en_cours)
@@ -74,7 +72,9 @@ int main()
 	    jeu->tour = jeu->nb_coups % 2 == 0 ? BLANC : NOIR;
 		envoyer_jeu(jeu,sock_echange);
 		sem_post(&defense);
+
 	}
+
 	pthread_join(th,NULL);
 
 	close(sock_echange);

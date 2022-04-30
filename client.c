@@ -11,7 +11,7 @@
 #include "reseau.h"
 #include "dames.h"
 
-#define PORT_INCP 1234
+#define PORT_INCP 7777
 char deplacement[100];
 int main(int argc, char *argv[])
 {
@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
 	{
 		recevoir_jeu(&jeu,sock);
 		afficher_jeu(jeu);
+		printf("%d \n",jeu.en_cours);
 		jouer(&jeu,deplacement);
 		afficher_jeu(jeu);
 		envoyer_jeu(&jeu,sock);
