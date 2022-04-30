@@ -52,7 +52,6 @@
  }
 
 
-
   void recevoir_jeu(jeu_t  *jeu , int sock){
      uint32_t pion,couleur,dame,numero,enc,nbc,tour;
     
