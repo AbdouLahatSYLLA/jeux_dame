@@ -426,37 +426,21 @@ void faire_dames(jeu_t * jeu){
     if(jeu->plateau[i][j].couleur == couleur)
       jeu->plateau[i][j].dame = 1;
   }
-  couleur = BLANC;
-  i = 0, j = 1;
+  int couleur = BLANC;
+  int i = 0, j = 1;
   for(;j<10;j+=2) {
     if(jeu->plateau[i][j].couleur == couleur)
       jeu->plateau[i][j].dame = 1;
   }
 }
-int test_deplace_dames(jeu_t  jeu,int numero1, int numero2 ) {
-  int x1, y1, x2, y2;
-  numero_coord(jeu, numero1, &x1, &y1);
-  numero_coord(jeu, numero2, &x2, &y2);
-  if(jeu.plateau[x1][y1].dame != 1){
-    printf("pion %d n est pas une dame \n",numero1 );
-    return -1;
-  }
-  while(x1!=x2 || y1!= y2) {
-    if(x2>x1)
-      x1++ ;
-    else
-      x1-- ;
-    if(y2>y1)
-      y1++ ;
-    else
-      y1-- ;
-    if(jeu.plateau[x1][y1].pion == 0) {
-      printf("%c%d n’est pas vide\n",y1+ 'a',x1+1);
-      return -1;
-    }
-  }
-  return 1;
-}
+
+
+
+
+
+
+
+
 
 
 //on peut déplacer la dame OK
@@ -501,6 +485,41 @@ int deplacer_dame(jeu_t *jeu, int x1,int y1, int x2, int y2){
       jeu->plateau[x1][y1].pion = 0;
     return 1;
   }
+  return 0;
+}
+
+//toute les conditions sont remplis pour que la dame capture 
+int dame_peut_capturer(jeu_t jeu, int numero, int * capture){
+  
+  //si la case de départ est vide
+  if(jeu->plateau[x1][y1]==NULL)
+    return 0;
+  //si la case d'arrivée n'est pas vide 
+  if(jeu->plateau[x2][y2]!=NULL)
+    return 0;
+  //si le coup n'est pas une diagonal
+  if(abs(x1-x2)!=abs(y1-y2))
+    return 0;
+  // si la pièce sur la case n'appartient pas au joueur
+  if(jeu->plateau[x1][y1].couleur != jeu->tour ){
+    return 0;
+
+  int i = x1;
+  int j = y1 ;
+  // on parcourt toutes le cases de la case courante à la case destination
+  while( (i != x2) || (j!=y2)){
+    if(x2 < i)
+      i--;
+    else 
+      i++;
+    if(y2 > j)
+      j++;
+    else
+      j--;
+
+    if( (jeu.plateau[i-1][j-1]!=NULL) && (jeu.plateau[i+1][j+1]==NULL))
+      return 1;
+    }
   return 0;
 }
 
