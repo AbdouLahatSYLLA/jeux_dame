@@ -17,7 +17,7 @@ typedef struct{
     int sock;
 }client;
 
-#define PORT_INCP 7777
+#define PORT_INCP 49153
 sem_t attaquant;
 sem_t defense;
 char deplacement[100];
@@ -92,12 +92,7 @@ void * joueur2(void * arg){
 	    clt->jeu->tour = clt->jeu->nb_coups % 2 == 0 ? BLANC : NOIR;
 		afficher_jeu(*clt->jeu);
 		sem_post(&attaquant);	
-
-	
-	
 	}
-	
-      
 	return NULL;
 }
 

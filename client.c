@@ -11,11 +11,19 @@
 #include "reseau.h"
 #include "dames.h"
 
-#define PORT_INCP 7777
+#define PORT_INCP 49153
 char deplacement[100];
 int main(int argc, char *argv[])
 {
 
+	struct addrinfo *res;
+	printf("%d",argc);
+	 if (argc < 2)
+	 {
+		printf(" Usage %s adresse du joueur ou nom de domaine \n",argv[0]);
+		exit(2);
+	 }
+	 
 	/* 1. Création d'une socket tcp ipv4 */
 	int sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock < 0) {
