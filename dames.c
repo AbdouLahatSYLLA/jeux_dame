@@ -520,6 +520,34 @@ int dame_peut_capturer(jeu_t jeu, int numero, int * capture){
     if( (jeu.plateau[i-1][j-1]!=NULL) && (jeu.plateau[i+1][j+1]==NULL))
       return 1;
     }
+  }
   return 0;
 }
 
+//fonction incomplète
+void capturer_avec_une_dame(jeu_t * jeu, int numero1, int numero2, int * x1, int * y1, int * x2, int * y2){
+  if(dame_peut_capturer(jeu,x1,y1,x2,y2)){
+  int i = x1;
+  int j = y1 ;
+  // on parcourt toutes le cases de la case courante à la case destination
+  while( (i != x2) || (j!=y2)){
+    if(x2 < i)
+      i--;
+    else 
+      i++;
+    if(y2 > j)
+      j++;
+    else
+      j--;
+
+    if((jeu.plateau[i][j]!=jeu.plateau[x1][y1]) && (jeu.plateau[i+1][j+1]==NULL)){
+      //à completer : retirer la piece jeu.plateau[i][j]
+    }
+  jeu->nbcoups++;
+  return 1;
+  }
+return 0;
+}
+
+//fonction incomplète
+void retirer_piece ();
