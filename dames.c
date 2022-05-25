@@ -458,6 +458,34 @@ int test_deplace_dames(jeu_t  jeu,int numero1, int numero2 ) {
   return 1;
 }
 
-void deplacer_dame (jeu_t * jeu , int x1,int y1,int x2,int y2){
+int peut_deplacer_dame(jeu_t *jeu, int x1, int y1, int x2, int y2){
 
+  //si la case de départ est vide
+  if(jeu.plateau[x1][y1]==NULL)
+    return 0;
+  //si la case d'arrivée n'est pas vide 
+  if(jeu.plateau[x2][y2]!=NULL)
+    return 0;
+  //si le coup n'est pas une diagonal
+  if(abs(x1-x2)!=abs(y1-y2))
+    return 0;
+
+  int i = x1;
+  int j = y1 ;
+  // on parcourt toutes le cases de la case courante à la case destination
+  while( (i != x2) || (j!=y2)){
+    if(x2 < i)
+      i--;
+    else 
+      i++;
+    if(y2 > j)
+      j++;
+    else
+      j--;
+
+    if( (jeu.plateau[i][j]!=NULL) && (jeu.plateau[i+1][j+1]!=NULL))
+      return 0
+    }
+  return 1;
 }
+
