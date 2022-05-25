@@ -86,19 +86,6 @@ void initialiser_jeu(jeu_t * jeu){
   jeu->nb_coups = 0;
 }
 
-void verifier_dame(jeu_t * jeu){
- /* for(int i = 0; i < 5; i++){
-    if(jeu->plateau[i].pion == 1 && jeu->plateau[i].couleur == 1){
-      jeu->plateau[i].dame = 1;
-    }
-  }
-  for(int i = 45; i < 50; i++){
-    if(jeu->plateau[i].pion == 1 && jeu->plateau[i].couleur == 0){
-      jeu->plateau[i].dame = 1;
-    }
-  }*/
-  return;
-}
 
 void deplacer_pion (jeu_t * jeu , int x1,int y1,int x2,int y2){
   if(jeu->plateau[x1][y1].pion){
@@ -419,40 +406,46 @@ int capture_appartient(jeu_t jeu, tabi_t bourreaux[], int taille, char capture[]
   return 0;
 }
 
+
+//PARTIE DAME
+
+
+
+//on vérifie si la pièce est une dame ou non
+int verifier_dame(jeu_t * jeu, int x, int y){
+  if(jeu->plateau[x][y].dame == 1)
+    return 1;
+  return 0;
+}
+
+//Transformer un pion en une dame 
 void faire_dames(jeu_t * jeu){
   int couleur = NOIR;
-  int i = 9, j = 0;
+  int i = 9;
+  int j = 0;
   for(;j<10;j+=2) {
     if(jeu->plateau[i][j].couleur == couleur)
       jeu->plateau[i][j].dame = 1;
   }
-  int couleur = BLANC;
-  int i = 0, j = 1;
+  couleur = BLANC;
+  i = 0;
+  j = 1;
   for(;j<10;j+=2) {
     if(jeu->plateau[i][j].couleur == couleur)
       jeu->plateau[i][j].dame = 1;
   }
 }
 
-
-
-
-
-
-
-
-
-
-//on peut déplacer la dame OK
+//On vérifie si la dame peut aller à cette case 
 int peut_deplacer_dame(jeu_t *jeu, int x1, int y1, int x2, int y2){
   //si ce n'est pas une dame 
-  if(jeu.plateau[x1][y1].dame!=1)
+  if(jeu->plateau[x1][y1].dame!=1)
     return 0;
   //si la case de départ est vide
-  if(jeu.plateau[x1][y1]==NULL)
+  if(jeu->plateau[x1][y1].pion == 0)
     return 0;
   //si la case d'arrivée n'est pas vide 
-  if(jeu.plateau[x2][y2]!=NULL)
+  if(jeu->plateau[x2][y2].pion == 1 )
     return 0;
   //si le coup n'est pas une diagonal
   if(abs(x1-x2)!=abs(y1-y2))
@@ -471,31 +464,35 @@ int peut_deplacer_dame(jeu_t *jeu, int x1, int y1, int x2, int y2){
     else
       j--;
 
-    if( (jeu.plateau[i][j]!=NULL) && (jeu.plateau[i+1][j+1]!=NULL))
-      return 0
+  //  if( (jeu->plateau[i][j]!=NULL) && (jeu->plateau[i+1][j+1]!=NULL))
+    if( (jeu->plateau[i][j].pion == 1) && (jeu->plateau[i+1][j+1].pion == 1))
+
+      return 0;
     }
   return 1;
 }
 
-//on déplace la dame  OK
-int deplacer_dame(jeu_t *jeu, int x1,int y1, int x2, int y2){
-  if(peut_déplacer_dame(jeu,x1,x2,y1,y2)){
+
+//On déplace la dame d'une case (x1,y1) à une case (x2,y2)
+void deplacer_dame(jeu_t *jeu, int x1,int y1, int x2, int y2){
+  if(peut_deplacer_dame(jeu,x1,x2,y1,y2)){
     jeu->plateau[x2][y2].pion = jeu->plateau[x1][y1].pion;
         jeu->plateau[x2][y2].couleur = jeu->plateau[x1][y1].couleur;
       jeu->plateau[x1][y1].pion = 0;
-    return 1;
   }
-  return 0;
+  return;
 }
 
+
+
 //toute les conditions sont remplis pour que la dame capture 
-int dame_peut_capturer(jeu_t jeu, int numero, int * capture){
+int dame_peut_capturer(jeu_t * jeu, int x1, int y1, int x2, int y2){
   
   //si la case de départ est vide
-  if(jeu->plateau[x1][y1]==NULL)
+  if(jeu->plateau[x1][y1].pion == 0)
     return 0;
   //si la case d'arrivée n'est pas vide 
-  if(jeu->plateau[x2][y2]!=NULL)
+  if(jeu->plateau[x2][y2].pion == 1)
     return 0;
   //si le coup n'est pas une diagonal
   if(abs(x1-x2)!=abs(y1-y2))
@@ -517,37 +514,39 @@ int dame_peut_capturer(jeu_t jeu, int numero, int * capture){
     else
       j--;
 
-    if( (jeu.plateau[i-1][j-1]!=NULL) && (jeu.plateau[i+1][j+1]==NULL))
+    if( (jeu->plateau[i-1][j-1].pion == 1) && (jeu->plateau[i+1][j+1].pion == 0))
       return 1;
     }
   }
   return 0;
 }
 
-//fonction incomplète
+//La dame capture une ou plusieurs piece
 void capturer_avec_une_dame(jeu_t * jeu, int numero1, int numero2, int * x1, int * y1, int * x2, int * y2){
-  if(dame_peut_capturer(jeu,x1,y1,x2,y2)){
-  int i = x1;
-  int j = y1 ;
-  // on parcourt toutes le cases de la case courante à la case destination
-  while( (i != x2) || (j!=y2)){
-    if(x2 < i)
-      i--;
-    else 
-      i++;
-    if(y2 > j)
-      j++;
-    else
-      j--;
+  if(dame_peut_capturer(jeu, *x1, *y1, *x2, *y2)){
+    int i = *x1;
+    int j = *y1 ;
+    // on parcourt toutes le cases de la case courante à la case destination
+    while( (i != *x2) || (j!= *y2)){
+      if(*x2 < i)
+        i--;
+      else 
+        i++;
+      if(*y2 > j)
+        j++;
+      else
+        j--;
 
-    if((jeu.plateau[i][j]!=jeu.plateau[x1][y1]) && (jeu.plateau[i+1][j+1]==NULL)){
-      //à completer : retirer la piece jeu.plateau[i][j]
+
+      if((jeu->plateau[i][j].couleur !=jeu->plateau[*x1][*y1].couleur ) && (jeu->plateau[i+1][j+1].pion == 0)){
+        int a = i+1;
+        int b = j+1;
+        capturer(jeu, numero1,numero2,x1,y1,&a,&b);
+        jeu->nb_coups++;
+      }
+      else{ //on deplace le pion, rien a capture entre les départ et arrivée 
+        deplacer_dame(jeu,*x1,*y1,i,j);
+      }
     }
-  jeu->nbcoups++;
-  return 1;
   }
-return 0;
 }
-
-//fonction incomplète
-void retirer_piece ();
