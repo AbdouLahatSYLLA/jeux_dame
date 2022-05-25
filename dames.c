@@ -550,3 +550,59 @@ void capturer_avec_une_dame(jeu_t * jeu, int numero1, int numero2, int * x1, int
     }
   }
 }
+
+
+
+//Dernière modif : penser à ajouter les déclarations dans le .h
+
+//on a déjà x1,y1 et l'arrivé sera les 4 coins
+int nb_capture_avec_une_dame(jeu_t * jeu, int numero1, int numero2, int * x1, int * y1, int * x2, int * y2){
+  int score=0;
+  if(dame_peut_capturer(jeu, *x1, *y1, *x2, *y2)){
+    int i = *x1;
+    int j = *y1 ;
+    // on parcourt toutes le cases de la case courante à la case destination
+    while( (i != *x2) || (j!= *y2)){
+      if(*x2 < i)
+        i--;
+      else 
+        i++;
+      if(*y2 > j)
+        j++;
+      else
+        j--;
+
+
+      if((jeu.plateau[i][j]!=jeu.plateau[*x1][*y1]) && (jeu.plateau[i+1][j+1]==NULL)){
+        capturer(jeu, numero1,numero2,* x1,* y1,i+1,j+1);
+        score++;
+      }
+      else{ //on deplace le pion, rien a capture entre les départ et arrivée 
+        deplacer_dame(*jeu,x1,y1,i,j);
+      }
+    }
+  }
+  return score;
+}
+
+//on veut le plus long chemin 
+int choisir_capture_dame(jeu_t jeu, int numero1, int numero2, int *x1 , int *x2, arrivée???? )
+  //diagonal en haut à gauche
+  /*
+  tant qu'on est pas hors plateau 
+  x1-1 -> x2
+  y1-1
+  */
+  int hg = nb_capture_avec_une_dame(jeu,numero1,numero2,* x1,* y1, *x2, *y2);
+
+  //diagonal en haut à droite
+  int hd = nb_capture_avec_une_dame(jeu,numero1,numero2,* x1,* y1, *x2, *y2);
+
+  //diagonal en bas à gauche
+  int bg = nb_capture_avec_une_dame(jeu,numero1,numero2,* x1,* y1, *x2, *y2);
+
+  //diagonal en bas à droite
+  int bd = nb_capture_avec_une_dame(jeu,numero1,numero2,* x1,* y1, *x2, *y2);
+
+  int tab[4]={hg,hd,bg,bd};
+  //return max tableau ; 
