@@ -30,6 +30,7 @@ typedef struct{
 
 typedef struct{
   int t[10];
+  int taille; //pour les dames
 } tabi_t;
 
 //Partie pion / jeu
@@ -58,6 +59,8 @@ void deplacer_dame (jeu_t * jeu ,int x1, int y1, int x2, int y2);
 int dame_peut_capturer(jeu_t * jeu, int x1, int y1, int x2, int y2);
 void capturer_avec_une_dame(jeu_t * jeu, int numero1, int numero2, int * x1, int * y1, int * x2, int * y2);
 int max_tableau (int tab[],int taille);
+void nb_capture_avec_une_dame(jeu_t * jeu, int x1, int  y1, int  x2, int  y2,tabi_t boureaux[],int *n,int *taille);
+void afficher_tab(int tab[], int taille);
 //utilité ?
 //int choisir_capture_dame(jeu_t jeu, couple_t bourreaux[], int taille, int * numero);
 //int dame_appartient(jeu_t jeu, couple_t bourreaux[], int taille, int numero);

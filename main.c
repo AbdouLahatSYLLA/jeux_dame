@@ -17,18 +17,27 @@ int main(int argc, char ** argv){
     else pion 
     */  
    /*Captures */
-    if(verifier_dame() && dame_peut_capturer()){
-      capturer_avec_une_dame();
-    }
+    
+    
     if(capture_est_possible(jeu, &numero1, &numero2)){
-      capturer(&jeu, numero1, numero2, &x1, &y1, &x2, &y2);
-      deplacer_pion(&jeu,x1,y1,x2,y2);
-      coord_numero(jeu, x2, y2, &numero1);
-      while(pion_peut_capturer(jeu, numero1, &numero2)){
+      int a,b,c,d;
+      numero_coord(jeu,numero1,&a,&b);
+      numero_coord(jeu,numero2,&c,&d);
+      if(verifier_dame(&jeu,a,b)){
+        capturer_avec_une_dame(&jeu,numero1,numero2,&a,&b,&c,&d);
+      }
+      else{
         capturer(&jeu, numero1, numero2, &x1, &y1, &x2, &y2);
         deplacer_pion(&jeu,x1,y1,x2,y2);
         coord_numero(jeu, x2, y2, &numero1);
+
+        while(pion_peut_capturer(jeu, numero1, &numero2)){
+          capturer(&jeu, numero1, numero2, &x1, &y1, &x2, &y2);
+          deplacer_pion(&jeu,x1,y1,x2,y2);
+          coord_numero(jeu, x2, y2, &numero1);
+        }
       }
+
     }
     /*Deplacements normaux*/
     else{
