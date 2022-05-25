@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 		exit(3);
 	}
     jeu_t  jeu ;
-
+	jeu.en_cours = 1;
 	/* 4. Échange avec le serveur */
 	/* 4.1 Construction de la requête INCP */
     
