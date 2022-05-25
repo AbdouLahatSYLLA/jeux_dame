@@ -458,8 +458,12 @@ int test_deplace_dames(jeu_t  jeu,int numero1, int numero2 ) {
   return 1;
 }
 
-int peut_deplacer_dame(jeu_t *jeu, int x1, int y1, int x2, int y2){
 
+//on peut déplacer la dame OK
+int peut_deplacer_dame(jeu_t *jeu, int x1, int y1, int x2, int y2){
+  //si ce n'est pas une dame 
+  if(jeu.plateau[x1][y1].dame!=1)
+    return 0;
   //si la case de départ est vide
   if(jeu.plateau[x1][y1]==NULL)
     return 0;
@@ -487,5 +491,16 @@ int peut_deplacer_dame(jeu_t *jeu, int x1, int y1, int x2, int y2){
       return 0
     }
   return 1;
+}
+
+//on déplace la dame  OK
+int deplacer_dame(jeu_t *jeu, int x1,int y1, int x2, int y2){
+  if(peut_déplacer_dame(jeu,x1,x2,y1,y2)){
+    jeu->plateau[x2][y2].pion = jeu->plateau[x1][y1].pion;
+        jeu->plateau[x2][y2].couleur = jeu->plateau[x1][y1].couleur;
+      jeu->plateau[x1][y1].pion = 0;
+    return 1;
+  }
+  return 0;
 }
 
