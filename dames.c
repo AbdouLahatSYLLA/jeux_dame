@@ -322,10 +322,16 @@ void coord_numero(jeu_t jeu, int x, int y, int * numero){
 }
 
 int pion_peut_capturer(jeu_t jeu, int numero, int * capture){
-  int x, y;
+  int x, y,k,l;
   numero_coord(jeu, numero, &x, &y);
   int capture1, capture2, capture3, capture4;
   if(jeu.plateau[x][y].pion){
+    if(jeu.plateau[x][y].dame == 1){
+      int numero2 = choisir_capture_dame(jeu,numero,x,y);
+      numero_coord(jeu,numero2,&k,&l);
+
+    }
+    else{
     coord_numero(jeu, x + 1, y - 1, &capture1);
     coord_numero(jeu, x + 1, y + 1, &capture2);
     coord_numero(jeu, x - 1, y - 1, &capture3);
@@ -345,6 +351,7 @@ int pion_peut_capturer(jeu_t jeu, int numero, int * capture){
     else if(verifier_capture(jeu, numero, capture4)){
       *capture = capture4;
       return 1;
+    }
     }
   }
   return 0;
@@ -556,53 +563,107 @@ void capturer_avec_une_dame(jeu_t * jeu, int numero1, int numero2, int * x1, int
 //Dernière modif : penser à ajouter les déclarations dans le .h
 
 //on a déjà x1,y1 et l'arrivé sera les 4 coins
-int nb_capture_avec_une_dame(jeu_t * jeu, int numero1, int numero2, int * x1, int * y1, int * x2, int * y2){
+int nb_capture_avec_une_dame(jeu_t * jeu, int numero1, int * x1, int * y1, int  x2, int  y2,int *a, int *b){
   int score=0;
-  if(dame_peut_capturer(jeu, *x1, *y1, *x2, *y2)){
+  /*if(dame_peut_capturer(jeu, *x1, *y1, *x2, *y2)){*/
     int i = *x1;
-    int j = *y1 ;
+    int j = *y1;
+    int k = x2;
+    int l = y2;
+    
     // on parcourt toutes le cases de la case courante à la case destination
-    while( (i != *x2) || (j!= *y2)){
-      if(*x2 < i)
-        i--;
-      else 
-        i++;
-      if(*y2 > j)
-        j++;
-      else
-        j--;
-
-
-      if((jeu.plateau[i][j]!=jeu.plateau[*x1][*y1]) && (jeu.plateau[i+1][j+1]==NULL)){
-        capturer(jeu, numero1,numero2,* x1,* y1,i+1,j+1);
+    while(1){
+      if (dame_peut_capturer(jeu,i,j,k,l)) {
         score++;
+        *a = k;
+        *b = l;
       }
-      else{ //on deplace le pion, rien a capture entre les départ et arrivée 
+      else
+        break;
+      
+
+       //Haut gauche 
+      if(k < i && l < j ){
+        k--;
+        l--;
+      }
+      //Haut droite
+      else if (k < i && l > j)
+      {
+        k--;
+        l++;
+      }
+      // Bas gauche
+      else if (k> i && l < j)
+      {
+        k++;
+        l--;
+      }
+      // Bas droite
+      else if (k > i && l > j)
+      {
+       k++;
+       l++; 
+      }
+      
+      if (k < 0 || k > 9 || l < 0 || l > 9) {
+        break;
+      }
+      /*else{ //on deplace le pion, rien a capture entre les départ et arrivée 
         deplacer_dame(*jeu,x1,y1,i,j);
-      }
+      }*/
     }
-  }
+  //}
   return score;
 }
 
 //on veut le plus long chemin 
-int choisir_capture_dame(jeu_t jeu, int numero1, int numero2, int *x1 , int *x2, arrivée???? )
+int choisir_capture_dame(jeu_t jeu, int numero1, int *x1 , int *x2 )
   //diagonal en haut à gauche
   /*
   tant qu'on est pas hors plateau 
   x1-1 -> x2
   y1-1
   */
-  int hg = nb_capture_avec_une_dame(jeu,numero1,numero2,* x1,* y1, *x2, *y2);
+  int a,b,c,d,e,f,g,h,cible;
+  int hg = nb_capture_avec_une_dame(jeu,numero1, x1, y1, *x1-1, *y1 -1,&a, &b);
 
   //diagonal en haut à droite
-  int hd = nb_capture_avec_une_dame(jeu,numero1,numero2,* x1,* y1, *x2, *y2);
+  int hd = nb_capture_avec_une_dame(jeu,numero1, x1, y1,*x1-1,*y1 +1, &c, &d);
 
   //diagonal en bas à gauche
-  int bg = nb_capture_avec_une_dame(jeu,numero1,numero2,* x1,* y1, *x2, *y2);
+  int bg = nb_capture_avec_une_dame(jeu,numero1, x1, y1,*x1+1,*y1-1,&e, &f);
 
   //diagonal en bas à droite
-  int bd = nb_capture_avec_une_dame(jeu,numero1,numero2,* x1,* y1, *x2, *y2);
+  int bd = nb_capture_avec_une_dame(jeu,numero1, x1, y1,*x1+1,*y1+1, &g, &h);
 
   int tab[4]={hg,hd,bg,bd};
+  int max = max_tableau(tab,4);
+  if (max == hg) {
+    coord_numero(a,b,&cible);
+    return cible;
+  }
+  if(max == hd ){
+    coord_numero(c,d,&cible);
+    return cible;
+  }
+  if(max == bg){
+      coord_numero(e,f,&cible);
+    return cible;
+  }
+  if(max == bd){
+    coord_numero(g,h,&cible);
+    return cible;
+  }
+  return 0;
   //return max tableau ; 
+}
+int max_tableau ( int tab[],int taille) {
+max = tab[0];
+for(int i = 1; i < taille ,i++){
+  if(tab[i] > max){
+    max = tab[i];
+  }
+}
+return max;
+}

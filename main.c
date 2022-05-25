@@ -11,6 +11,15 @@ int main(int argc, char ** argv){
   char deplacement[100];
   int numero1, numero2;
   while(jeu.en_cours){
+    /* if dame 
+    if peut_capturer dame
+      capturer_dame 
+    else pion 
+    */  
+   /*Captures */
+    if(verifier_dame() && dame_peut_capturer()){
+      capturer_avec_une_dame();
+    }
     if(capture_est_possible(jeu, &numero1, &numero2)){
       capturer(&jeu, numero1, numero2, &x1, &y1, &x2, &y2);
       deplacer_pion(&jeu,x1,y1,x2,y2);
@@ -21,6 +30,7 @@ int main(int argc, char ** argv){
         coord_numero(jeu, x2, y2, &numero1);
       }
     }
+    /*Deplacements normaux*/
     else{
       while((move = saisir_deplacement(deplacement, &x1, &y1, &x2, &y2, jeu.tour, &jeu)));
       deplacer_pion(&jeu,x1,y1,x2,y2);
