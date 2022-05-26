@@ -90,20 +90,48 @@
 
  void jouer(jeu_t * jeu,char * deplacement){
      int x1,x2,y1,y2,numero1,numero2,move;
-    if(capture_est_possible(*jeu, &numero1, &numero2)){
-      capturer(jeu, numero1, numero2, &x1, &y1, &x2, &y2);
-      deplacer_pion(jeu,x1,y1,x2,y2);
-      coord_numero(*jeu, x2, y2, &numero1);
-      while(pion_peut_capturer(*jeu, numero1, &numero2)){
+     tabi_t bourreaux[50];
+     if(capture_est_possible(*jeu, &numero1, &numero2)){
+      int a,b,c,d;
+      numero_coord(*jeu,numero1,&a,&b);
+      numero_coord(*jeu,numero2,&c,&d);
+      if(verifier_dame(jeu,a,b) && dame_peut_capturer(jeu,a,b,c,d)){
+        capturer_avec_une_dame(jeu,numero1,numero2,&a,&b,&c,&d);
+        int n = 0;
+        numero1 = numero2;
+        a = c;
+        b = d;
+        while (captures_dame_possibles(jeu,a,b,bourreaux,&n,&numero2))
+        {
+          printf("%dx%d\n",numero1,numero2);
+          numero_coord(*jeu,numero2,&c,&d);
+          capturer_avec_une_dame(jeu,numero1,numero2,&a,&b,&c,&d);
+          a = c;
+          b = d;
+           numero1 = numero2;
+           n = 0;
+        }
+      }
+      else{
         capturer(jeu, numero1, numero2, &x1, &y1, &x2, &y2);
         deplacer_pion(jeu,x1,y1,x2,y2);
         coord_numero(*jeu, x2, y2, &numero1);
-      }
-    }
+        while(pion_peut_capturer(*jeu, numero1, &numero2)){
+          capturer(jeu, numero1, numero2, &x1, &y1, &x2, &y2);
+          deplacer_pion(jeu,x1,y1,x2,y2);
+          coord_numero(*jeu, x2, y2, &numero1);
+        }
 
+      }
+
+    }
+    /*Deplacements normaux*/
     else{
       while((move = saisir_deplacement(deplacement, &x1, &y1, &x2, &y2, jeu->tour, jeu)));
+      if(jeu->plateau[x1][y1].dame ==1 ){
+        deplacer_dame(jeu,x1,y1,x2,y2);
+      }
+      else
       deplacer_pion(jeu,x1,y1,x2,y2);
     }
-    
  }

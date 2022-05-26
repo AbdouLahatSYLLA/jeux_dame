@@ -70,6 +70,7 @@ int main()
 		jouer(jeu,deplacement);
 		jeu->nb_coups++;
 	    jeu->tour = jeu->nb_coups % 2 == 0 ? BLANC : NOIR;
+		faire_dames(jeu);
 		envoyer_jeu(jeu,sock_echange);
 		sem_post(&defense);
 
@@ -88,6 +89,7 @@ void * joueur2(void * arg){
 	{
 		sem_wait(&defense);
 		recevoir_jeu(clt->jeu,clt->sock);
+		faire_dames(clt->jeu);
 		clt->jeu->nb_coups++;
 	    clt->jeu->tour = clt->jeu->nb_coups % 2 == 0 ? BLANC : NOIR;
 		afficher_jeu(*clt->jeu);

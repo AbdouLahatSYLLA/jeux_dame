@@ -1,8 +1,10 @@
 #ifndef __DAMES__
 #define __DAMES__
+
 #define NOIR 0
 #define BLANC 1
 #define EGALITE 2
+
 typedef struct{
   int pion;
   int couleur;
@@ -30,8 +32,9 @@ typedef struct{
   int t[10];
 } tabi_t;
 
+//Partie pion / jeu
+
 void initialiser_jeu(jeu_t * jeu);
-void verifier_dame(jeu_t * jeu);
 void deplacer_pion (jeu_t * jeu ,int x1, int y1, int x2, int y2);
 int compter_pions(int couleur,jeu_t *jeu);
 void afficher_jeu(jeu_t jeu);
@@ -43,8 +46,27 @@ int verifier_deplacement(jeu_t jeu, int numero1, int numero2);
 int verifier_capture(jeu_t jeu, int numero1, int numero2);
 int pion_peut_capturer(jeu_t jeu, int numero, int * capture);
 int capture_est_possible(jeu_t jeu, int * numero1, int * numero2);
-int choisir_capture(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero);
+int choisir_capture(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero1, int * numero2);
 int capture_appartient(jeu_t jeu, tabi_t bourreaux[], int taille, char capture[]);
+
+//Partie dame 
+
+int verifier_dame(jeu_t * jeu, int x, int y);
 void faire_dames(jeu_t * jeu);
+int peut_deplacer_dame(jeu_t *jeu, int x1, int y1, int x2, int y2);
+void deplacer_dame (jeu_t * jeu ,int x1, int y1, int x2, int y2);
+int dame_peut_capturer(jeu_t * jeu, int x1, int y1, int x2, int y2);
+void capturer_avec_une_dame(jeu_t * jeu, int numero1, int numero2, int * x1, int * y1, int * x2, int * y2);
+int max_tableau (int tab[],int taille);
+int captures_dame_possibles(jeu_t * jeu, int x1, int  y1, tabi_t boureaux[],int *n,int *capture);
+void afficher_tab(int tab[], int taille);
+int verfier_haut_gauche(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[],int n1);
+int verfier_haut_droite(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[],int n1);
+int verfier_bas_gauche(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[],int n1);
+int verfier_bas_droite(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[],int n1);
+int verifier_capture_dame(jeu_t * jeu , int numero1, int numero2);
+//utilité ?
+//int choisir_capture_dame(jeu_t jeu, couple_t bourreaux[], int taille, int * numero);
+//int dame_appartient(jeu_t jeu, couple_t bourreaux[], int taille, int numero);
 
 #endif
