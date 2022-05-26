@@ -643,7 +643,7 @@ void capturer_avec_une_dame(jeu_t * jeu, int numero1, int numero2, int * x1, int
 }
 
 
-
+// Signé Adbou Lahat
 //Dernière modif : penser à ajouter les déclarations dans le .h
 //afficher les captures possibles de la dame
 int captures_dame_possibles(jeu_t * jeu, int x1, int  y1, tabi_t boureaux[],int *n,int *capture) {
