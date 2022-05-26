@@ -248,7 +248,10 @@ int verifier_deplacement(jeu_t jeu, int numero1, int numero2){
   int x1, y1, x2, y2;
   numero_coord(jeu, numero1, &x1, &y1);
   numero_coord(jeu, numero2, &x2, &y2);
-  if(jeu.plateau[x1][y1].pion){
+  if(jeu.plateau[x1][y1].pion && jeu.plateau[x1][y1].dame == 1){
+    return peut_deplacer_dame(&jeu,x1,y1,x2,y2);
+  }
+  if(jeu.plateau[x1][y1].pion && jeu.plateau[x1][y1].dame == 0) {
     if(jeu.plateau[x1][y1].couleur == BLANC && jeu.tour == 1 || jeu.plateau[x1][y1].couleur == NOIR && jeu.tour == 0){
       if(jeu.plateau[x2][y2].pion == 0){
         if(jeu.plateau[x1][y1].couleur == NOIR){
@@ -275,7 +278,8 @@ int verifier_capture(jeu_t jeu, int numero1, int numero2){
   int x1, y1, x2, y2;
   numero_coord(jeu, numero1, &x1, &y1);
   numero_coord(jeu, numero2, &x2, &y2);
-  if(jeu.plateau[x1][y1].pion){
+
+  if(jeu.plateau[x1][y1].pion && jeu.plateau[x1][y1].dame == 0 ){
     if(jeu.plateau[x2][y2].pion){
       if(jeu.plateau[x1][y1].couleur != jeu.plateau[x2][y2].couleur){
         if((x2 - x1 == 1 || x2 - x1 == -1) && (y2 - y1 == 1 || y2 - y1 == -1) && (x1 != x2) && (y1 != y2) && (x1 != -1) && (y1 != -1) && (x2 != -1) && (y2 != -1)){
@@ -355,7 +359,6 @@ int pion_peut_capturer(jeu_t jeu, int numero, int * capture){
 
 int capture_est_possible(jeu_t jeu, int * numero1, int * numero2){
   int n = 0;
-  int taille = 0;
   tabi_t bourreaux[100];
   printf("Captures possibles %s :\n", jeu.tour == BLANC ? "\033[36;01mBlanc\033[00m" : "\033[31;01mNoir\033[00m");
   for(int i = 0; i < 10; i++){
@@ -364,29 +367,9 @@ int capture_est_possible(jeu_t jeu, int * numero1, int * numero2){
       if(jeu.plateau[i][j].pion && jeu.plateau[i][j].dame == 1){
       if((jeu.tour == BLANC && jeu.plateau[i][j].couleur == BLANC) || (jeu.tour == NOIR && jeu.plateau[i][j].couleur == NOIR)){
           coord_numero(jeu, i, j, numero1);
-
-          nb_capture_avec_une_dame(&jeu,i,j,i-1, j-1, bourreaux,&n,&taille);
-          afficher_tab(bourreaux[n].t,taille);
-          bourreaux[n].taille = taille;
-          taille = 0;
-
-          nb_capture_avec_une_dame(&jeu,i,j,i-1, j+1, bourreaux,&n,&taille);
-          afficher_tab(bourreaux[n].t,taille);
-                    bourreaux[n].taille = taille;
-
-          taille = 0;
-
-          nb_capture_avec_une_dame(&jeu,i,j,i+1, j-1, bourreaux,&n,&taille); 
-          afficher_tab(bourreaux[n].t,taille);
-                    bourreaux[n].taille = taille;
-
-          taille = 0;
-
-          nb_capture_avec_une_dame(&jeu,i,j,i+1, j+1, bourreaux,&n,&taille); 
-          afficher_tab(bourreaux[n].t,taille);
-                    bourreaux[n].taille = taille;
-
-
+          //Haut gauche
+          if (captures_dame_possibles(&jeu,i,j,bourreaux,&n,numero2))
+                      ;
           }
         }
       
@@ -409,31 +392,24 @@ int capture_est_possible(jeu_t jeu, int * numero1, int * numero2){
     return 0;
   }
   else if(n > 0){
-    choisir_capture(jeu, bourreaux, n, numero1);
-    int a,b;
-
-    numero_coord(jeu,*numero1,&a,&b);
-    if (verifier_dame(&jeu,a,b)){
-       scanf("%d",numero2);
-    }
-
+    choisir_capture(jeu, bourreaux, n, numero1,numero2);
     return 1;
   }
 
   return 1;
 }
 
-int choisir_capture(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero){
+int choisir_capture(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero1,int *numero2){
   char choix[50];
   int poubelle;
   putchar('\n');
   while(1){
     printf("Entrer la capture à effectuer : ");
     scanf("%s", choix);
-    sscanf(choix, "%dx%d", numero, &poubelle);
+    sscanf(choix, "%dx%d", numero1,numero2);
 
     if(capture_appartient(jeu, bourreaux, taille, choix)){
-      sscanf(choix, "%dx%d", numero, &poubelle);
+      sscanf(choix, "%dx%d", numero1, numero2);
       return 1;
     }
   }
@@ -443,7 +419,7 @@ int choisir_capture(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero){
 int capture_appartient(jeu_t jeu, tabi_t bourreaux[], int taille, char capture[]){
   int numero1, numero2, poubelle1, poubelle2;
   for(int i = 0; i < taille; i++){
-    sscanf(capture, "%dx%d", &numero1, &poubelle1);
+    sscanf(capture, "%dx%d", &numero1, &numero2);
     if(bourreaux[i].t[0] == numero1){
       return 1;
     }
@@ -474,7 +450,7 @@ void faire_dames(jeu_t * jeu){
   }
   couleur = BLANC;
   i = 0;
-  j = 1;
+  j = 0;
   for(;j<10;j+=2) {
     if(jeu->plateau[i][j].couleur == couleur)
       jeu->plateau[i][j].dame = 1;
@@ -484,47 +460,58 @@ void faire_dames(jeu_t * jeu){
 //On vérifie si la dame peut aller à cette case 
 int peut_deplacer_dame(jeu_t *jeu, int x1, int y1, int x2, int y2){
   //si ce n'est pas une dame 
-  if(jeu->plateau[x1][y1].dame!=1)
+  if(jeu->plateau[x1][y1].dame != 1)
     return 0;
   //si la case de départ est vide
   if(jeu->plateau[x1][y1].pion == 0)
     return 0;
   //si la case d'arrivée n'est pas vide 
-  if(jeu->plateau[x2][y2].pion == 1 )
-    return 0;
   //si le coup n'est pas une diagonal
-  if(abs(x1-x2)!=abs(y1-y2))
+  //if(abs(x1-x2)!=abs(y1-y2))
     return 0;
 
   int i = x1;
   int j = y1 ;
   // on parcourt toutes le cases de la case courante à la case destination
-  while( (i != x2) || (j!=y2)){
-    if(x2 < i)
-      i--;
-    else 
-      i++;
-    if(y2 > j)
-      j++;
-    else
-      j--;
+  while (i != x2 && j != y2)
+  {
+       if (x2 < i)
+       {
+         i--;
+       }
+       else
+       {
+         i++;
+       }
+       if (y2 < j)
+       {
+         j--;
+       }
+       else
+       {
+         j++;
+       }
+       if (i == x2 && j == y2)
+       {
+         return (jeu->plateau[x2][y2].pion == 0);
+       }
 
-  //  if( (jeu->plateau[i][j]!=NULL) && (jeu->plateau[i+1][j+1]!=NULL))
-    if( (jeu->plateau[i][j].pion == 1) && (jeu->plateau[i+1][j+1].pion == 1))
-
-      return 0;
-    }
-  return 1;
+//Pion sur le chemin
+       if(jeu->plateau[i][j].couleur && jeu->plateau[i][j].pion == 1 ){
+         return 0;
+       }
+       
+  }
+  
+  return (jeu->plateau[x2][y2].pion == 0);
 }
 
 
 //On déplace la dame d'une case (x1,y1) à une case (x2,y2)
 void deplacer_dame(jeu_t *jeu, int x1,int y1, int x2, int y2){
-  if(peut_deplacer_dame(jeu,x1,x2,y1,y2)){
     jeu->plateau[x2][y2].pion = jeu->plateau[x1][y1].pion;
-        jeu->plateau[x2][y2].couleur = jeu->plateau[x1][y1].couleur;
-      jeu->plateau[x1][y1].pion = 0;
-  }
+    jeu->plateau[x2][y2].couleur = jeu->plateau[x1][y1].couleur;
+    jeu->plateau[x1][y1].pion = 0;
   return;
 }
 
@@ -539,12 +526,7 @@ int dame_peut_capturer(jeu_t * jeu, int x1, int y1, int x2, int y2){
   //si la case de départ est vide
   if(jeu->plateau[x1][y1].pion == 0)
     return 0;
-  //si la case d'arrivée n'est pas vide 
-  /*if(jeu->plateau[x2][y2].pion == 1)
-    return 0;*/
-  //si le coup n'est pas une diagonal
-  if(abs(x1-x2)!=abs(y1-y2))
-    return 0;
+
   // si la pièce sur la case n'appartient pas au joueur
   if(jeu->plateau[x1][y1].couleur != jeu->tour )
     return 0;
@@ -552,116 +534,196 @@ int dame_peut_capturer(jeu_t * jeu, int x1, int y1, int x2, int y2){
    if(jeu->plateau[x2][y2].couleur == jeu->tour || jeu->plateau[x2][y2].couleur == -1 )
     return 0;
   //Haut gauche
-  if (x2 < x1 && y2 < y1 ){
+  if (x2 < x1 && y2 < y1 )
     return (jeu->plateau[x2 -1 ][y2 -1].pion == 0);
-  }
   // Haut droite
-  if (x2 < x1 && y2 > y1 ){
-    return (jeu->plateau[x2 -1 ][y2 + 1].pion == 0);
-  }
+  if (x2 < x1 && y2 > y1 )
+   return (jeu->plateau[x2 -1 ][y2 + 1].pion == 0);
+  
+  
   //Bas gauche
-  if (x2 > x1 && y2 < y1 ){
-    return (jeu->plateau[x2 + 1 ][y2 -1].pion == 0);
-  }
-  //Bas droite
-  if (x2 > x1 && y2 > y1 ){
-    return (jeu->plateau[x2 + 1 ][y2 + 1].pion == 0);
-  }
+  if (x2 > x1 && y2 < y1 )
+   return (jeu->plateau[x2 + 1 ][y2 -1].pion == 0);
 
-  return 0;
+  //Bas droite
+  if (x2 > x1 && y2 > y1 )
+    return (jeu->plateau[x2 + 1 ][y2 + 1].pion == 0);
+
+  
+  
+  //Case vide
+  return 1;
 }
 
 //La dame capture une ou plusieurs piece
 void capturer_avec_une_dame(jeu_t * jeu, int numero1, int numero2, int * x1, int * y1, int * x2, int * y2){
-  if(dame_peut_capturer(jeu, *x1, *y1, *x2, *y2)){
     int i = *x1;
     int j = *y1 ;
     // on parcourt toutes le cases de la case courante à la case destination
-    while( (i != *x2) || (j!= *y2)){
-
-      if(*x2 < i)
-        i--;
-      else 
-        i++;
-      if(*y2 > j)
-        j++;
-      else
-        j--;
-
-      if((jeu->plateau[i][j].couleur !=jeu->plateau[*x1][*y1].couleur ) && (jeu->plateau[i+1][j+1].pion == 0)){
-        int a = i+1;
-        int b = j+1;
-        capturer(jeu, numero1,numero2,x1,y1,&a,&b);
-      }
-      else{ //on deplace le pion, rien a capture entre les départ et arrivée 
-        deplacer_dame(jeu,*x1,*y1,i,j);
-      }
-    }
+     //Haut gauche
+  if (x2 < x1 && y2 < y1 ){
+     deplacer_dame(jeu,i,j,*x2+1,*y2+1);
+     coord_numero(*jeu,*x2+1,*y2+1,&numero1);
+     capturer(jeu, numero1, numero2, x1,y1,x2,y2);
+     deplacer_pion(jeu,*x1,*y1,*x2,*y2);
+     return ;
   }
+  // Haut droite
+  if (x2 < x1 && y2 > y1 ){
+     deplacer_dame(jeu,i,j,*x2+1,*y2-1);
+     coord_numero(*jeu,*x2+1,*y2-1,&numero1);
+     capturer(jeu, numero1, numero2, x1,y1,x2,y2);
+     deplacer_pion(jeu,*x1,*y1,*x2,*y2);
+     return ;
+  }
+  //Bas gauche
+  if (x2 > x1 && y2 < y1 ){
+     deplacer_dame(jeu,i,j,*x2-1,*y2+1);
+     coord_numero(*jeu,*x2-1,*y2+1,&numero1);
+     capturer(jeu, numero1, numero2, x1,y1,x2,y2);
+     deplacer_pion(jeu,*x1,*y1,*x2,*y2);
+     return ;
+}
+  //Bas droite
+  if (x2 > x1 && y2 > y1 ){
+      deplacer_dame(jeu,i,j,*x2-1,*y2-1);
+      coord_numero(*jeu,*x2-1,*y2-1,&numero1);
+     capturer(jeu, numero1, numero2, x1,y1,x2,y2);
+     deplacer_pion(jeu,*x1,*y1,*x2,*y2);
+     return ;
+    }
+   
 }
 
 
 
 //Dernière modif : penser à ajouter les déclarations dans le .h
 //afficher les captures possibles de la dame
-void nb_capture_avec_une_dame(jeu_t * jeu, int x1, int  y1, int  x2, int  y2, tabi_t boureaux[],int *n,int *taille) {
-  int score=0;
-  *taille = 1;
+int captures_dame_possibles(jeu_t * jeu, int x1, int  y1, tabi_t boureaux[],int *n,int *capture) {
+ 
   /*if(dame_peut_capturer(jeu, *x1, *y1, *x2, *y2)){*/
-    int i = x1;
-    int j = y1;
-    int k = x2;
-    int l = y2;
-    int n1,n2;
-    coord_numero(*jeu,i,j,&n1);
-    boureaux[*n].t[score]= n1;
-    while(1){
-      if (dame_peut_capturer(jeu,i,j,k,l)) {
-        score++;
-        coord_numero(*jeu,k,l,&n2);
-        boureaux[*n].t[score]= n2;
-        *taille = *taille +1;
+    int n1,n2,hg,hd,bg,bd;
+    coord_numero(*jeu,x1,y1,&n1);
+    boureaux[*n].t[0]= n1;
+    hg =verfier_haut_gauche(jeu,x1,y1,capture,n,boureaux);
+    boureaux[*n].t[0]= n1;
+    hd = verfier_haut_droite(jeu,x1,y1,capture,n,boureaux);
+    boureaux[*n].t[0]= n1;
+    bg = verfier_bas_gauche(jeu,x1,y1,capture,n,boureaux);
+    boureaux[*n].t[0]= n1;
+    bd = verfier_haut_droite(jeu,x1,y1,capture,n,boureaux);
 
-      }
-      else
-        break;
-       //Haut gauche 
-      if(k < i && l < j ){
-        k--;
-        l--;
-      }
-      //Haut droite
-      else if (k < i && l > j)
-      {
-        k--;
-        l++;
-      }
-      // Bas gauche
-      else if (k> i && l < j)
-      {
-        k++;
-        l--;
-      }
-      // Bas droite
-      else if (k > i && l > j)
-      {
-       k++;
-       l++; 
-      }
-      if (k < 0 || k > 9 || l < 0 || l > 9) {
+    return  hg + hd + bg + bd;
+    
+      
+}
+
+int verfier_haut_gauche(jeu_t *jeu,int x1,int y1,int * capture,int *n,tabi_t boureaux[]){
+  int i = x1;
+  int j = y1;
+  int n2;
+   i--;
+   j--; 
+   while (i > 0 && j > 0)
+    {
+        
+      if(jeu->plateau[i][j].pion == 1 && jeu->plateau[i][j].couleur != jeu->plateau[x1][y1].couleur ){
+        if(dame_peut_capturer(jeu,x1,y1,i,j)){
+         coord_numero(*jeu,i,j,&n2);
+         printf("%dx%d\n",boureaux[*n].t[0],n2);
+         boureaux[*n].t[1]= n2;
+         *capture = n2;
+         *n++;
+         return 1;
+        }
         break;
       }
-      /*else{ //on deplace le pion, rien a capture entre les départ et arrivée 
-        deplacer_dame(*jeu,x1,y1,i,j);
-      }*/
+
+      if(jeu->plateau[i][j].pion == 1 && jeu->plateau[i][j].couleur == jeu->plateau[x1][y1].couleur ){
+        break;
+      }
     }
-    if(score == 0 ){
-      return;
+    return 0;
+}
+int verfier_haut_droite(jeu_t *jeu,int x1,int y1,int * capture,int * n,tabi_t boureaux[]){
+  int i = x1;
+  int j = y1;
+  int n2;
+   i--;
+   j++;
+   while (i > 0 && j < 10)
+    {
+       
+      if(jeu->plateau[i][j].pion == 1 && jeu->plateau[i][j].couleur != jeu->plateau[x1][y1].couleur ){
+        if(dame_peut_capturer(jeu,x1,y1,i,j)){
+         coord_numero(*jeu,i,j,&n2);
+         printf("%dx%d\n",boureaux[*n].t[0],n2);
+         boureaux[*n].t[1]= n2;
+         *capture = n2;
+         *n++;
+         return 1;
+        }
+        break;
+      }
+
+      if(jeu->plateau[i][j].pion == 1 && jeu->plateau[i][j].couleur == jeu->plateau[x1][y1].couleur ){
+        break;
+      }
     }
-    *n = *n + 1;
-    *taille = score;
-  //}
-  return ;
+    return 0;
+}
+int verfier_bas_gauche(jeu_t *jeu,int x1,int y1,int * capture,int * n,tabi_t boureaux[]){
+   int i = x1;
+  int j = y1;
+  int n2;
+        i++;
+        j--;
+   while (i < 10 && j > 0)
+    {
+      if(jeu->plateau[i][j].pion == 1 && jeu->plateau[i][j].couleur != jeu->plateau[x1][y1].couleur ){
+        if(dame_peut_capturer(jeu,x1,y1,i,j)){
+         coord_numero(*jeu,i,j,&n2);
+         printf("%dx%d\n",boureaux[*n].t[0],n2);
+         boureaux[*n].t[1]= n2;
+         *capture = n2;
+         *n++;
+         return 1;
+        }
+        break;
+      }
+
+      if(jeu->plateau[i][j].pion == 1 && jeu->plateau[i][j].couleur == jeu->plateau[x1][y1].couleur ){
+        break;
+      }
+    }
+    return 0;
+}
+int verfier_bas_droite(jeu_t *jeu,int x1,int y1,int * capture,int * n,tabi_t boureaux[]){
+   int i = x1;
+   int j = y1;
+   int n2;
+     i++;
+     j++;
+   while (i < 10 && j < 10)
+    {
+      
+      if(jeu->plateau[i][j].pion == 1 && jeu->plateau[i][j].couleur != jeu->plateau[x1][y1].couleur ){
+        if(dame_peut_capturer(jeu,x1,y1,i,j)){
+         coord_numero(*jeu,i,j,&n2);
+         printf("%dx%d\n",boureaux[*n].t[0],n2);
+         boureaux[*n].t[1]= n2;
+         *capture = n2;
+         *n++;
+         return 1;
+        }
+        break;
+      }
+
+      if(jeu->plateau[i][j].pion == 1 && jeu->plateau[i][j].couleur == jeu->plateau[x1][y1].couleur ){
+        break;
+      }
+    }
+    return 0;
 }
  
 //on veut le plus long chemin pour le bot
@@ -692,7 +754,7 @@ void afficher_tab(int tab[], int taille){
 
 
 /*
-int nb_capture_avec_une_dame(jeu_t * jeu, int numero1, int * x1, int * y1, int  x2, int  y2,int *a, int *b,tabi_t boureaux[],int *n) {
+int captures_dame_possibles(jeu_t * jeu, int numero1, int * x1, int * y1, int  x2, int  y2,int *a, int *b,tabi_t boureaux[],int *n) {
   int score=0;
   if(dame_peut_capturer(jeu, *x1, *y1, *x2, *y2)){
     int i = *x1;
