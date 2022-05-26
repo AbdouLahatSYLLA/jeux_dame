@@ -18,7 +18,7 @@
 
 void envoyer_jeu(jeu_t *jeu ,int sock);
 void recevoir_jeu(jeu_t *jeu ,int sock);
- void jouer(jeu_t * jeu,char * deplacement);
+void jouer(jeu_t * jeu,char * deplacement);
 
 
 #endif
