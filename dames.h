@@ -60,10 +60,10 @@ void capturer_avec_une_dame(jeu_t * jeu, int numero1, int numero2, int * x1, int
 int max_tableau (int tab[],int taille);
 int captures_dame_possibles(jeu_t * jeu, int x1, int  y1, tabi_t boureaux[],int *n,int *capture);
 void afficher_tab(int tab[], int taille);
-int verfier_haut_gauche(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[]);
-int verfier_haut_droite(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[]);
-int verfier_bas_gauche(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[]);
-int verfier_bas_droite(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[]);
+int verfier_haut_gauche(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[],int n1);
+int verfier_haut_droite(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[],int n1);
+int verfier_bas_gauche(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[],int n1);
+int verfier_bas_droite(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[],int n1);
 
 //utilité ?
 //int choisir_capture_dame(jeu_t jeu, couple_t bourreaux[], int taille, int * numero);
