@@ -64,7 +64,7 @@ int verfier_haut_gauche(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t bo
 int verfier_haut_droite(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[],int n1);
 int verfier_bas_gauche(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[],int n1);
 int verfier_bas_droite(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[],int n1);
-
+int verifier_capture_dame(jeu_t * jeu , int numero1, int numero2);
 //utilité ?
 //int choisir_capture_dame(jeu_t jeu, couple_t bourreaux[], int taille, int * numero);
 //int dame_appartient(jeu_t jeu, couple_t bourreaux[], int taille, int numero);
