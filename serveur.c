@@ -33,7 +33,11 @@ void * joueur2(void * arg);
 int main()
 {
   pthread_t th;
+  uint8_t rapport[256];
+  uint8_t recu[20];
 
+  rapport[0] = 255;
+  int n = 1;
   /* Création/Ouverture d'un fichier servant de journal de connections */
   int fic = open("journal_de_bord.log",O_WRONLY|O_CREAT|O_APPEND, 0644);
   if(fic < 0){
@@ -77,10 +81,12 @@ int main()
   struct sockaddr_in6 addr_clt;
   socklen_t taille_addr = sizeof(struct sockaddr_in6);
 	int sock_echange = accept(sock, (struct sockaddr *)&addr_clt, &taille_addr);
-  if(sock_echange < 0){
+	  if(sock_echange < 0){
       perror("erreur : accept");
       exit(2);
   }
+
+  copier_ipv6(rapport,&n,addr_clt.sin6_addr.s6_addr);
   /*Converti l'adresse ipv6 sous forme binaire en texte*/
     char addr_char[INET6_ADDRSTRLEN];
     if(inet_ntop(AF_INET6, &(addr_clt.sin6_addr), addr_char, INET6_ADDRSTRLEN) == NULL){
@@ -109,7 +115,7 @@ int main()
 	{
 		printf("Coup n° %d \n",jeu.nb_coups);
 		afficher_jeu(jeu);
-		jouer(&jeu,deplacement);
+		jouer(&jeu,deplacement,rapport,&n,recu);
 	    jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
 		faire_dames(&jeu);
 		pion_noirs = compter_pions(NOIR,&jeu);
@@ -117,10 +123,14 @@ int main()
 		if(pion_noirs == 0 || pion_blancs == 0 || jeu.nb_coups == 100){
 			jeu.en_cours = 0;
 			envoyer_jeu(&jeu,sock_echange);
+			write(sock_echange,recu,sizeof(recu));
 			break;
 		}
 		envoyer_jeu(&jeu,sock_echange);
+		write(sock_echange,recu,sizeof(recu));
 		recevoir_jeu(&jeu,sock_echange);
+		read(sock_echange,recu,sizeof(recu));
+		concatener_octets(rapport,recu,&n);
 		afficher_jeu(jeu);
 	    pion_noirs = compter_pions(NOIR,&jeu);
     	pion_blancs = compter_pions(BLANC,&jeu);
@@ -132,7 +142,15 @@ int main()
 	resultat_jeu(&jeu);
 	close(sock_echange);
 	close(sock);
-
+/*	for(n;n < 256;n++){
+		rapport[n] = 0;
+	}*/
+	printf("%d octets\n",n);
+	for ( int i = 0; i < n; i++)
+	{
+		printf("%x ",rapport[i]);
+	}
+	putchar('\n');
 	return 0;
 }
 	
@@ -154,3 +172,5 @@ void resultat_jeu(jeu_t *jeu){
       	printf("Egalite\n");
     	}
 }
+
+

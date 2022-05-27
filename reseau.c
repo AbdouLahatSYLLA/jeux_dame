@@ -14,7 +14,6 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include "reseau.h"
-
  void envoyer_jeu(jeu_t *jeu , int sock){
      uint32_t pion,couleur,dame,numero,enc,nbc,tour;
 
@@ -111,9 +110,12 @@
  }
 
 //Version bot
- void jouer(jeu_t * jeu,char * deplacement){
+ void jouer(jeu_t * jeu,char * deplacement,uint8_t * octets, int * n,uint8_t *dep){
      int x1,x2,y1,y2,numero1,numero2,move;
+     int x = 0;
      tabi_t bourreaux[50];
+     char copie[100];
+     char suite[10];
      if(capture_est_possible_alea(*jeu, &numero1, &numero2,deplacement)){
       int a,b,c,d;
       numero_coord(*jeu,numero1,&a,&b);
@@ -127,6 +129,8 @@
         while (captures_dame_possibles(jeu,a,b,bourreaux,&n,&numero2))
         {
           printf("%dx%d\n",numero1,numero2);
+          sprintf(suite,"x%d",numero2);
+          strcat(deplacement,suite);
           numero_coord(*jeu,numero2,&c,&d);
           capturer_avec_une_dame(jeu,numero1,numero2,&a,&b,&c,&d);
           a = c;
@@ -140,13 +144,19 @@
         deplacer_pion(jeu,x1,y1,x2,y2);
         coord_numero(*jeu, x2, y2, &numero1);
         while(pion_peut_capturer(*jeu, numero1, &numero2)){
+          sprintf(suite,"x%d",numero2);
+          strcat(deplacement,suite);
           capturer(jeu, numero1, numero2, &x1, &y1, &x2, &y2);
           deplacer_pion(jeu,x1,y1,x2,y2);
           coord_numero(*jeu, x2, y2, &numero1);
         }
-
       }
+       strcpy(copie,deplacement);
+        ajouter_capture(octets,n,deplacement);
+        ajouter_capture(dep,&x,copie);
+        dep[x] = '\0';
 
+        
     }
     /*Deplacements normaux*/
     else{
@@ -163,7 +173,14 @@
       }
       else
       deplacer_pion(jeu,x1,y1,x2,y2);
+      strcpy(copie,deplacement);
+      ajouter_deplacement(octets,n,deplacement);
+      printf("Après ajout %s\n",copie);
+      ajouter_deplacement(dep,&x,copie);
+      dep[x] = '\0';
+
     }
+    
     jeu->nb_coups++;
  }
 /*
@@ -363,6 +380,7 @@ int choisir_capture_alea(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero
   printf("%d taille : %d \n",alea,taille);
   *numero1 = bourreaux[alea].t[0];
   *numero2 = bourreaux[alea].t[1];
+  printf("Capture : %dx%d",*numero1,*numero2);
   sprintf(deplacement, "%dx%d", numero1, numero2);
    if(capture_appartient(jeu, bourreaux, taille, deplacement)){
       return 1;
@@ -370,4 +388,41 @@ int choisir_capture_alea(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero
   putchar('\n');
   
   return 0;
+}
+
+
+void ajouter_deplacement(uint8_t * oct,int * pos,char * deplacement){
+    char * dep = strtok(deplacement,"-x");
+    while (dep != NULL)
+{
+    oct[*pos] = atoi(dep)+128;
+    *pos = *pos +1;
+    dep = strtok(NULL,"-");
+   
+}
+}
+void ajouter_capture(uint8_t * oct,int * pos,char * capture){
+    char *dep = strtok(capture,"x-");
+    while (dep != NULL)
+{
+    oct[*pos] =  atoi(dep);
+    *pos = *pos + 1;
+    dep = strtok(NULL,"x");
+}
+oct[*pos -1 ] = oct[*pos -1] +128;
+}
+void copier_ipv6(uint8_t * oct,int * pos,unsigned char * addr){
+    for (int i = 0; i <16 ; i++)
+{
+    oct[*pos] = addr[i];
+    *pos = *pos + 1;
+}
+
+}
+void concatener_octets(uint8_t * dest,uint8_t*src,int *n){
+  uint8_t *c = src;
+  for(;*c != '\0';++c){
+    dest[*n] = *c;
+    *n = *n + 1;
+  }
 }

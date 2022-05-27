@@ -29,8 +29,10 @@ int main(int argc, char *argv[])
 	 }
 
 	/* 1. Création d'une socket tcp ipv6 */
-	
-
+	uint8_t rapport[256];
+	uint8_t recu[20];
+  	rapport[0] = 1;
+	int n = 1;
 	/* Création de la sockaddr */
 	/*Utilisation de getaddrinfo pour pouvour utiliser de l'ipv4/ipv6,
 		chez le serveur on utilisera la famille d'adresse ipv6,
@@ -56,6 +58,8 @@ int main(int argc, char *argv[])
 				}
 		int cn = connect(sock, cur->ai_addr, cur->ai_addrlen);		
 		  if(cn == 0){
+			  struct sockaddr_in6 * ipv6 = (struct sockaddr_in6 *) cur->ai_addr;
+			  copier_ipv6(rapport,&n,ipv6->sin6_addr.s6_addr);
 			  puts("Connexion reussie");
 			  break;
 		  }
@@ -70,10 +74,12 @@ int main(int argc, char *argv[])
 	/* 4. Échange avec le serveur */
 	/* 4.1 Construction de la requête INCP */
 	recevoir_jeu(&jeu,sock);
+	read(sock,recu,sizeof(recu));
+	concatener_octets(rapport,recu,&n);
 	while (jeu.en_cours)
 	{
 		printf("Coup n° %d \n",jeu.nb_coups);
-		jouer(&jeu,deplacement);
+		jouer(&jeu,deplacement,rapport,&n,recu);
 		 jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
 		faire_dames(&jeu);
 		afficher_jeu(jeu);
@@ -82,10 +88,14 @@ int main(int argc, char *argv[])
 		if(pion_noirs == 0 || pion_blancs == 0 || jeu.nb_coups == 100){
 			jeu.en_cours = 0;
 			envoyer_jeu(&jeu,sock);
+			write(sock,recu,sizeof(recu));
 			break;
 		}
 		envoyer_jeu(&jeu,sock);
+		write(sock,recu,sizeof(recu));
 		recevoir_jeu(&jeu,sock);
+		read(sock,recu,sizeof(recu));
+		concatener_octets(rapport,recu,&n);
 		afficher_jeu(jeu);
 
 	}
@@ -103,5 +113,14 @@ int main(int argc, char *argv[])
     	}
 
 	close(sock);
+	/*for(n;n < 256;n++){
+		rapport[n] = '\0';
+	}*/
+	printf("%d octets\n",n);
+	for ( int i = 0; i < n; i++)
+	{
+		printf("%x ",rapport[i]);
+	}
+	putchar('\n');
 	return 0;
 }
