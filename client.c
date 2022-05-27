@@ -62,10 +62,10 @@ int main(int argc, char *argv[])
 		cur = cur->ai_next ; 
 	  }
 	  
-
+	freeaddrinfo(cur);
 		/* Tentative de connection */
 		
-
+	int pion_blancs,pion_noirs;
     jeu_t  jeu ;
 	/* 4. Échange avec le serveur */
 	/* 4.1 Construction de la requête INCP */
@@ -73,16 +73,34 @@ int main(int argc, char *argv[])
 	while (jeu.en_cours)
 	{
 		printf("Coup n° %d \n",jeu.nb_coups);
-		afficher_jeu(jeu);
 		jouer(&jeu,deplacement);
 		 jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
 		faire_dames(&jeu);
-		printf("Coup n° %d \n",jeu.nb_coups);
 		afficher_jeu(jeu);
+		pion_noirs = compter_pions(NOIR,&jeu);
+		pion_blancs = compter_pions (BLANC,&jeu);
+		if(pion_noirs == 0 || pion_blancs == 0 || jeu.nb_coups == 100){
+			jeu.en_cours = 0;
+			envoyer_jeu(&jeu,sock);
+			break;
+		}
 		envoyer_jeu(&jeu,sock);
 		recevoir_jeu(&jeu,sock);
+		afficher_jeu(jeu);
 
 	}
+	if(pion_noirs == 0){
+      	printf("Victoire des blancs\n");
+   		 }
+
+   	else if(pion_blancs == 0){
+    	  printf("Victoire des noirs\n");
+      		
+   		 }
+
+   	   else if(jeu.nb_coups == 100){
+      	printf("Egalite\n");
+    	}
 
 	close(sock);
 	return 0;

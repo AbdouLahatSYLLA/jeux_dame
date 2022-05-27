@@ -150,14 +150,14 @@
     }
     /*Deplacements normaux*/
     else{
-      char dep[100];
+      
       if(jeu->tour == BLANC){
-        recherche_pion_qui_bouge_blanc(jeu,dep);
+        recherche_pion_qui_bouge_blanc(jeu,deplacement);
       }
       else if(jeu->tour == NOIR){
-        recherche_pion_qui_bouge_noir(jeu,dep);
+        recherche_pion_qui_bouge_noir(jeu,deplacement);
       }
-      while((move = saisir_deplacement(dep, &x1, &y1, &x2, &y2, jeu->tour, jeu)));
+      while((move = saisir_deplacement(deplacement, &x1, &y1, &x2, &y2, jeu->tour, jeu)));
       if(jeu->plateau[x1][y1].dame ==1 ){
         deplacer_dame(jeu,x1,y1,x2,y2);
       }
@@ -360,11 +360,11 @@ int choisir_capture_alea(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero
   int alea;
   srand(time(NULL));
   alea = rand() % taille;
+  printf("%d taille : %d \n",alea,taille);
   *numero1 = bourreaux[alea].t[0];
   *numero2 = bourreaux[alea].t[1];
   sprintf(deplacement, "%dx%d", numero1, numero2);
    if(capture_appartient(jeu, bourreaux, taille, deplacement)){
-      sprintf(deplacement, "%dx%d", numero1, numero2);
       return 1;
     }
   putchar('\n');

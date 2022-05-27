@@ -27,7 +27,7 @@ sem_t attaquant;
 sem_t defense;
 char deplacement[100];
 pthread_mutex_t mut;
-
+void resultat_jeu(jeu_t *jeu);
 void * joueur2(void * arg);
 
 int main()
@@ -112,52 +112,45 @@ int main()
 		jouer(&jeu,deplacement);
 	    jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
 		faire_dames(&jeu);
+		pion_noirs = compter_pions(NOIR,&jeu);
+		pion_blancs = compter_pions (BLANC,&jeu);
+		if(pion_noirs == 0 || pion_blancs == 0 || jeu.nb_coups == 100){
+			jeu.en_cours = 0;
+			envoyer_jeu(&jeu,sock_echange);
+			break;
+		}
 		envoyer_jeu(&jeu,sock_echange);
 		recevoir_jeu(&jeu,sock_echange);
-		printf("Coup n° %d \n",jeu.nb_coups);
+		afficher_jeu(jeu);
 	    pion_noirs = compter_pions(NOIR,&jeu);
     	pion_blancs = compter_pions(BLANC,&jeu);
-   		 printf("Nb de coups : %d.\n",jeu.nb_coups);
-    	if(pion_noirs == 0){
-      	printf("Victoire des blancs\n");
-      	jeu.en_cours = 0;
-		envoyer_jeu(&jeu,sock_echange);
-      	break;
-   		 }
-   	 if(pion_blancs == 0){
-      printf("Victoire des noirs\n");
-      jeu.en_cours = 0;
-	  envoyer_jeu(&jeu,sock_echange);
-      break;
+    	if(pion_noirs == 0 || pion_blancs == 0 || jeu.nb_coups == 100){
+			jeu.en_cours = 0;
+			break;
+		}
     }
-
-    if(jeu.nb_coups == 100){
-      printf("Egalite\n");
-      jeu.en_cours = 0;
-	  envoyer_jeu(&jeu,sock_echange);
-      break;
-    }
-	}
-
-	
-
+	resultat_jeu(&jeu);
 	close(sock_echange);
 	close(sock);
 
 	return 0;
 }
+	
 
-void * joueur2(void * arg){
-	client * clt = arg;
-	while (clt->jeu->en_cours)
-	{
-		sem_wait(&defense);
-		recevoir_jeu(clt->jeu,clt->sock);
-		faire_dames(clt->jeu);
-		clt->jeu->nb_coups++;
-	  	clt->jeu->tour = clt->jeu->nb_coups % 2 == 0 ? BLANC : NOIR;
-		afficher_jeu(*clt->jeu);
-		sem_post(&attaquant);
-	}
-	return NULL;
+
+//DEHOOOOORS
+void resultat_jeu(jeu_t *jeu){
+	int pion_noirs,pion_blancs;
+	pion_noirs = compter_pions(NOIR,jeu);
+    pion_blancs = compter_pions(BLANC,jeu);
+    	if(pion_noirs == 0){
+      	printf("Victoire des blancs\n");
+   		 }
+   	 	else if(pion_blancs == 0){
+    	  printf("Victoire des noirs\n");
+   		 }
+
+   	   else if(jeu->nb_coups == 100){
+      	printf("Egalite\n");
+    	}
 }

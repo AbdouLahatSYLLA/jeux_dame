@@ -109,17 +109,14 @@ int main(int argc, char ** argv){
     printf("Nb de coups : %d.\n",jeu.nb_coups);
     if(pion_noirs == 0){
       printf("Victoire des blancs\n");
-      jeu.en_cours = 0;
       break;
     }
     if(pion_blancs == 0){
       printf("Victoire des noirs\n");
-      jeu.en_cours = 0;
       break;
     }
     if(jeu.nb_coups == 100){
       printf("Egalite\n");
-      jeu.en_cours = 0;
       break;
     }
   }
