@@ -67,7 +67,6 @@ int main(int argc, char *argv[])
 	{
 		recevoir_jeu(&jeu,sock);
 		afficher_jeu(jeu);
-		printf("%d \n",jeu.en_cours);
 		jouer(&jeu,deplacement);
 		afficher_jeu(jeu);
 		envoyer_jeu(&jeu,sock);

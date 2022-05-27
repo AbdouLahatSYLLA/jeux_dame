@@ -64,7 +64,7 @@ int main()
 	}
 
 	/* 4. Écouter sur la socket d'écoute */
-	if (listen(sock, 128) < 0) {
+	if (listen(sock, 0) < 0) {
 		perror("listen");
 		exit(2);
 	}
@@ -142,7 +142,7 @@ void * joueur2(void * arg){
 		faire_dames(clt->jeu);
 		recevoir_jeu(clt->jeu, clt->sock);
 		clt->jeu->nb_coups++;
-	  clt->jeu->tour = clt->jeu->nb_coups % 2 == 0 ? BLANC : NOIR;
+	  	clt->jeu->tour = clt->jeu->nb_coups % 2 == 0 ? BLANC : NOIR;
 		afficher_jeu(*clt->jeu);
 		sem_post(&attaquant);
 	}
