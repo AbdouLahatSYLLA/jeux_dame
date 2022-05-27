@@ -120,7 +120,6 @@ int main()
 		jeu->nb_coups++;
 	    jeu->tour = jeu->nb_coups % 2 == 0 ? BLANC : NOIR;
 		faire_dames(jeu);
-	  jeu->tour = jeu->nb_coups % 2 == 0 ? BLANC : NOIR;
 		envoyer_jeu(jeu,sock_echange);
 		sem_post(&defense);
 
