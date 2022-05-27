@@ -25,9 +25,15 @@
       tour = htonl(tour);
       nbc= htonl(nbc);
 
-    write(sock,&enc,sizeof(uint32_t));
-    write(sock,&tour,sizeof(uint32_t));
-    write(sock,&nbc,sizeof(uint32_t));
+    if(write(sock,&enc,sizeof(uint32_t))<=0){
+      exit(2);
+    }
+    if(write(sock,&tour,sizeof(uint32_t))<=0){
+        exit(2);
+    }
+    if(write(sock,&nbc,sizeof(uint32_t))<=0){
+      exit(2);
+    }
 
      for ( int i = 0; i < 10; i++)
      {
@@ -43,10 +49,18 @@
              numero =htonl(numero);
 
 
-                write(sock,&pion,sizeof(uint32_t));
-                write(sock,&couleur,sizeof(uint32_t));
-                write(sock,&dame,sizeof(uint32_t));
-                write(sock,&numero,sizeof(uint32_t));
+                if(write(sock,&pion,sizeof(uint32_t))<=0){
+                    exit(2);
+                }
+                if(write(sock,&couleur,sizeof(uint32_t))<=0){
+                    exit(2);
+                }
+                if(write(sock,&dame,sizeof(uint32_t))<=0){
+                    exit(2);
+                }
+                if(write(sock,&numero,sizeof(uint32_t))<=0){
+                    exit(2);
+                }
          }
 
      }
@@ -68,7 +82,8 @@
      {
          for (int j = 0; j < 10; j++)
          {
-                if(read(sock,&pion,sizeof(uint32_t)) < =0){
+
+                if(read(sock,&pion,sizeof(uint32_t)) <=0){
                   exit(2);
                 }
                 if(read(sock,&couleur,sizeof(uint32_t)) <=0){
@@ -142,7 +157,6 @@
       else if(jeu->tour == NOIR){
         recherche_pion_qui_bouge_noir(jeu,dep);
       }
-      printf("pion qui peut bouger : %s\n",dep );
       while((move = saisir_deplacement(dep, &x1, &y1, &x2, &y2, jeu->tour, jeu)));
       if(jeu->plateau[x1][y1].dame ==1 ){
         deplacer_dame(jeu,x1,y1,x2,y2);
@@ -150,6 +164,7 @@
       else
       deplacer_pion(jeu,x1,y1,x2,y2);
     }
+    jeu->nb_coups++;
  }
 /*
  void Robot_joueur(jeu_t * jeu,int sock){

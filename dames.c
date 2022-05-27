@@ -85,6 +85,7 @@ void initialiser_jeu(jeu_t * jeu){
   jeu->en_cours = 1;
   jeu->tour = 1;
   jeu->nb_coups = 0;
+  jeu->tour = BLANC;
 }
 
 

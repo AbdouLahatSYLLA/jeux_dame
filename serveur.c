@@ -51,7 +51,7 @@ int main()
 	/* 2. Création de la sockaddr */
 	struct sockaddr_in6 sa = { .sin6_family = AF_INET6,
 				                    .sin6_port = htons(PORT_INCP),
-				                    .sin6_addr.s6_addr = htonl(INADDR_ANY) };
+				                    .sin6_addr = in6addr_any };
 	/* Optionnel : faire en sorte de pouvoir réutiliser l'adresse sans
 	 * attendre après la fin du serveur. */
   int opt = 1;
@@ -64,7 +64,7 @@ int main()
 	}
 
 	/* 4. Écouter sur la socket d'écoute */
-	if (listen(sock, 0) < 0) {
+	if (listen(sock, 128) < 0) {
 		perror("listen");
 		exit(2);
 	}
@@ -99,33 +99,47 @@ int main()
     }
 
   /*Création et initialisation d'un jeu*/
-  jeu_t *jeu = malloc(sizeof(jeu_t));
-  initialiser_jeu(jeu);
+  jeu_t jeu ;
+  initialiser_jeu(&jeu);
   /*Les blancs vont commencer la partie*/
-	jeu->tour = BLANC;
-
-
-  client *att = malloc(sizeof(client));
-  att->jeu = jeu;
-  att->sock = sock_echange;
   /*Pour l'attaquant*/
-  pthread_create(&th,NULL,joueur2,att);
-
+	int pion_noirs,pion_blancs;
   /*Pour le défenseur*/
-	while (jeu->en_cours)
+	while (jeu.en_cours)
 	{
-		afficher_jeu(*jeu);
-		sem_wait(&attaquant);
-		jouer(jeu,deplacement);
-		jeu->nb_coups++;
-	    jeu->tour = jeu->nb_coups % 2 == 0 ? BLANC : NOIR;
-		faire_dames(jeu);
-		envoyer_jeu(jeu,sock_echange);
-		sem_post(&defense);
+		printf("Coup n° %d \n",jeu.nb_coups);
+		afficher_jeu(jeu);
+		jouer(&jeu,deplacement);
+	    jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
+		faire_dames(&jeu);
+		envoyer_jeu(&jeu,sock_echange);
+		recevoir_jeu(&jeu,sock_echange);
+		printf("Coup n° %d \n",jeu.nb_coups);
+	    pion_noirs = compter_pions(NOIR,&jeu);
+    	pion_blancs = compter_pions(BLANC,&jeu);
+   		 printf("Nb de coups : %d.\n",jeu.nb_coups);
+    	if(pion_noirs == 0){
+      	printf("Victoire des blancs\n");
+      	jeu.en_cours = 0;
+		envoyer_jeu(&jeu,sock_echange);
+      	break;
+   		 }
+   	 if(pion_blancs == 0){
+      printf("Victoire des noirs\n");
+      jeu.en_cours = 0;
+	  envoyer_jeu(&jeu,sock_echange);
+      break;
+    }
 
+    if(jeu.nb_coups == 100){
+      printf("Egalite\n");
+      jeu.en_cours = 0;
+	  envoyer_jeu(&jeu,sock_echange);
+      break;
+    }
 	}
 
-	pthread_join(th,NULL);
+	
 
 	close(sock_echange);
 	close(sock);
@@ -140,7 +154,6 @@ void * joueur2(void * arg){
 		sem_wait(&defense);
 		recevoir_jeu(clt->jeu,clt->sock);
 		faire_dames(clt->jeu);
-		recevoir_jeu(clt->jeu, clt->sock);
 		clt->jeu->nb_coups++;
 	  	clt->jeu->tour = clt->jeu->nb_coups % 2 == 0 ? BLANC : NOIR;
 		afficher_jeu(*clt->jeu);

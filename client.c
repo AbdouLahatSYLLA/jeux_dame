@@ -21,8 +21,7 @@ char deplacement[100];
 int main(int argc, char *argv[])
 {
 
-	struct addrinfo *res;
-	printf("%d",argc);
+	//printf("%d",argc);
 	 if (argc < 2)
 	 {
 		printf(" Usage %s adresse du joueur ou nom de domaine \n",argv[0]);
@@ -30,17 +29,14 @@ int main(int argc, char *argv[])
 	 }
 
 	/* 1. Création d'une socket tcp ipv6 */
-	int sock = socket(AF_INET6, SOCK_STREAM, 0);
-	if (sock < 0) {
-		perror("socket");
-		exit(2);
-	}
+	
 
 	/* Création de la sockaddr */
 	/*Utilisation de getaddrinfo pour pouvour utiliser de l'ipv4/ipv6,
 		chez le serveur on utilisera la famille d'adresse ipv6,
 		car les adresse ipv4 seront mappées. */
 		int stat;
+		int sock ;
 		struct addrinfo hints = { .ai_socktype = SOCK_STREAM,
 															.ai_flags = AI_V4MAPPED,
 															.ai_family = AF_INET6};
@@ -51,25 +47,41 @@ int main(int argc, char *argv[])
 	      printf("%s\n", gai_strerror(stat));
 	      return 2;
 	  }
+	  while (cur != NULL)
+	  {
+		  sock = socket(cur->ai_family, SOCK_STREAM, 0);
+			if (sock < 0) {
+				cur = cur->ai_next;
+				continue;
+				}
+		int cn = connect(sock, cur->ai_addr, cur->ai_addrlen);		
+		  if(cn == 0){
+			  puts("Connexion reussie");
+			  break;
+		  }
+		cur = cur->ai_next ; 
+	  }
+	  
 
 		/* Tentative de connection */
-		if (connect(sock, cur->ai_addr, cur->ai_addrlen) < 0) {
-			perror("connect");
-			exit(3);
-		}
+		
 
     jeu_t  jeu ;
-		jeu.en_cours = 1;
 	/* 4. Échange avec le serveur */
 	/* 4.1 Construction de la requête INCP */
-
+	recevoir_jeu(&jeu,sock);
 	while (jeu.en_cours)
 	{
-		recevoir_jeu(&jeu,sock);
+		printf("Coup n° %d \n",jeu.nb_coups);
 		afficher_jeu(jeu);
 		jouer(&jeu,deplacement);
+		 jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
+		faire_dames(&jeu);
+		printf("Coup n° %d \n",jeu.nb_coups);
 		afficher_jeu(jeu);
 		envoyer_jeu(&jeu,sock);
+		recevoir_jeu(&jeu,sock);
+
 	}
 
 	close(sock);
