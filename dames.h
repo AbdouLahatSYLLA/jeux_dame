@@ -45,11 +45,11 @@ void coord_numero(jeu_t jeu, int x, int y, int * numero);
 int verifier_deplacement(jeu_t jeu, int numero1, int numero2);
 int verifier_capture(jeu_t jeu, int numero1, int numero2);
 int pion_peut_capturer(jeu_t jeu, int numero, int * capture);
-int capture_est_possible(jeu_t jeu, int * numero1, int * numero2);
-int choisir_capture(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero1, int * numero2);
+int capture_est_possible(jeu_t jeu, int * numero1, int * numero2,char * deplacement);
+int choisir_capture(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero1, int * numero2,char * deplacement);
 int capture_appartient(jeu_t jeu, tabi_t bourreaux[], int taille, char capture[]);
 
-//Partie dame 
+//Partie dame
 
 int verifier_dame(jeu_t * jeu, int x, int y);
 void faire_dames(jeu_t * jeu);
@@ -64,7 +64,7 @@ int verfier_haut_gauche(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t bo
 int verfier_haut_droite(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[],int n1);
 int verfier_bas_gauche(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[],int n1);
 int verfier_bas_droite(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[],int n1);
-int verifier_capture_dame(jeu_t * jeu , int numero1, int numero2);
+
 //utilité ?
 //int choisir_capture_dame(jeu_t jeu, couple_t bourreaux[], int taille, int * numero);
 //int dame_appartient(jeu_t jeu, couple_t bourreaux[], int taille, int numero);

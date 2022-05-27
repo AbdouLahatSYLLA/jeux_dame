@@ -17,7 +17,7 @@
 
  void envoyer_jeu(jeu_t *jeu , int sock){
      uint32_t pion,couleur,dame,numero,enc,nbc,tour;
-  
+
       enc = (uint32_t) jeu->en_cours;
       tour = (uint32_t) jeu->tour;
       nbc = (uint32_t) jeu->nb_coups;
@@ -41,22 +41,22 @@
              couleur = htonl(couleur);
              dame = htonl(dame);
              numero =htonl(numero);
-             
+
 
                 write(sock,&pion,sizeof(uint32_t));
                 write(sock,&couleur,sizeof(uint32_t));
                 write(sock,&dame,sizeof(uint32_t));
                 write(sock,&numero,sizeof(uint32_t));
          }
-         
+
      }
-     
+
  }
 
 
   void recevoir_jeu(jeu_t  *jeu , int sock){
      uint32_t pion,couleur,dame,numero,enc,nbc,tour;
-    
+
     read(sock,&enc,sizeof(uint32_t));
     read(sock,&tour,sizeof(uint32_t));
     read(sock,&nbc,sizeof(uint32_t));
@@ -68,7 +68,7 @@
      {
          for (int j = 0; j < 10; j++)
          {
-               
+
                 read(sock,&pion,sizeof(uint32_t));
                 read(sock,&couleur,sizeof(uint32_t));
                 read(sock,&dame,sizeof(uint32_t));
@@ -77,21 +77,21 @@
              couleur = ntohl(couleur);
              dame = ntohl(dame);
              numero =ntohl(numero);
-             
+
                  jeu->plateau[i][j].pion = (int)  pion;
                 jeu->plateau[i][j].couleur= (int)  couleur;
                 jeu->plateau[i][j].dame= (int)  dame;
                 jeu->plateau[i][j].numero= (int) numero;
          }
-         
+
      }
-     
+
  }
 
  void jouer(jeu_t * jeu,char * deplacement){
      int x1,x2,y1,y2,numero1,numero2,move;
      tabi_t bourreaux[50];
-     if(capture_est_possible(*jeu, &numero1, &numero2)){
+     if(capture_est_possible(*jeu, &numero1, &numero2,deplacement)){
       int a,b,c,d;
       numero_coord(*jeu,numero1,&a,&b);
       numero_coord(*jeu,numero2,&c,&d);
@@ -135,3 +135,60 @@
       deplacer_pion(jeu,x1,y1,x2,y2);
     }
  }
+/*
+ void Robot_joueur(jeu_t * jeu,int sock){
+  d abord on fait la capture s il y a une capture à faire
+   sinon on recherche le premier pion qui peux se deplacer et on prends son nimero avec numero_coord-le premier deplacement
+  à faire et on envoie cette chaine comme etant notre coup;
+
+  char coup[32];
+  int numero1,numero2;
+  if(capture_est_possible(jeu,&numero1,&numero2)){
+    sprintf(coup,"%dx%d",numero1,numero2);
+    envoyer_jeu()
+  }
+ }
+*/
+void recherche_pion_qui_bouge(jeu_t * jeu,char * coup){
+  int numero1,numero2;
+  coup = malloc(100);
+
+  for (int i = 0; i < 9; i++) {
+    for (int j = 0; j < 9; j++) {
+      if(jeu->tour == jeu->plateau[i][i].couleur){
+        if(jeu->plateau[i][i].couleur == BLANC){
+          if(jeu->plateau[i-1][j-1].pion == 0){
+            coord_numero(*jeu,i,j,&numero1);
+            coord_numero(*jeu,i-1,j-1,&numero2);
+            sprintf(coup,"%d-%d",numero1,numero2);
+            printf(coup,"%d-%d",numero1,numero2);
+            break;
+          }
+          if(jeu->plateau[i-1][j+1].pion == 0){
+            coord_numero(*jeu,i,j,&numero1);
+            coord_numero(*jeu,i-1,j+1,&numero2);
+            sprintf(coup,"%d-%d",numero1,numero2);
+            printf(coup,"%d-%d",numero1,numero2);
+            break;
+          }
+        }
+         if(jeu->plateau[i][i].couleur == NOIR){
+          if(jeu->plateau[i+1][j-1].pion == 0){
+            coord_numero(*jeu,i,j,&numero1);
+            coord_numero(*jeu,i+1,j-1,&numero2);
+            sprintf(coup,"%d-%d",numero1,numero2);
+            printf(coup,"%d-%d",numero1,numero2);
+            break;
+          }
+          if(jeu->plateau[i+1][j+1].pion == 0){
+            coord_numero(*jeu,i,j,&numero1);
+            coord_numero(*jeu,i+1,j+1,&numero2);
+            sprintf(coup,"%d-%d",numero1,numero2);
+            printf(coup,"%d-%d",numero1,numero2);
+            break;
+          }
+        }
+      }
+    }
+  }
+}

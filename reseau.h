@@ -19,6 +19,8 @@
 void envoyer_jeu(jeu_t *jeu ,int sock);
 void recevoir_jeu(jeu_t *jeu ,int sock);
 void jouer(jeu_t * jeu,char * deplacement);
+void recherche_pion_qui_bouge(jeu_t * jeu,char * coup);
+//void Robot_joueur(jeu_t * jeu);
 
 
 #endif
