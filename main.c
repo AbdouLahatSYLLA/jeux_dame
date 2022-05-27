@@ -10,6 +10,8 @@
 void recherche_pion_qui_bouge(jeu_t * jeu,char * coup);
 void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup);
 void recherche_pion_qui_bouge_blanc(jeu_t * jeu,char * coup);
+int capture_est_possible_alea(jeu_t jeu, int * numero1, int * numero2,char * deplacement);
+int choisir_capture_alea(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero1,int *numero2,char * deplacement);
 int main(int argc, char ** argv){
   jeu_t jeu;
   int x1,y1,x2,y2,pion_noirs,pion_blancs, move ;
@@ -334,7 +336,7 @@ int capture_est_possible_alea(jeu_t jeu, int * numero1, int * numero2,char * dep
     return 0;
   }
   else if(n > 0){
-    choisir_capture(jeu, bourreaux, n, numero1,numero2,deplacement);
+    choisir_capture_alea(jeu, bourreaux, n, numero1,numero2,deplacement);
     return 1;
   }
 
@@ -347,18 +349,15 @@ int choisir_capture_alea(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero
   int poubelle;
   int alea;
   srand(time(NULL));
-  alea = rand() % n;
-  //*numero1 = bourreaux[alea];
-  putchar('\n');
-  while(1){
-    printf("Entrer la capture à effectuer : ");
-    //scanf("%s", choix);
-    sscanf(deplacement, "%dx%d", numero1,numero2);
-
-    if(capture_appartient(jeu, bourreaux, taille, deplacement)){
-      sscanf(deplacement, "%dx%d", numero1, numero2);
+  alea = rand() % taille;
+  *numero1 = bourreaux[alea].t[0];
+  *numero2 = bourreaux[alea].t[1];
+  sprintf(deplacement, "%dx%d", numero1, numero2);
+   if(capture_appartient(jeu, bourreaux, taille, deplacement)){
+      sprintf(deplacement, "%dx%d", numero1, numero2);
       return 1;
     }
-  }
+  putchar('\n');
+  
   return 0;
 }
