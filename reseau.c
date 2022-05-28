@@ -252,7 +252,7 @@ void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup){
 
     for (int j = 0; j < 10; j++) {
 
-      if(jeu->tour == jeu->plateau[i][j].couleur && jeu->plateau[i][j].pion != 0 ){
+      if(jeu->tour == jeu->plateau[i][j].couleur && jeu->plateau[i][j].pion > 0 ){
         if(jeu->plateau[i][j].couleur == NOIR) {
           if(jeu->plateau[i+1][j-1].pion == 0){
             coord_numero(*jeu,i,j,&numero1);
@@ -296,7 +296,7 @@ for (int i = 9; i >= 0; i--)
   {
     for (int j = 0; j <  10; j++)
     {
-       if(jeu->tour == jeu->plateau[i][j].couleur && jeu->plateau[i][j].pion != 0 ){
+       if(jeu->tour == jeu->plateau[i][j].couleur && jeu->plateau[i][j].pion > 0 ){
         if(jeu->plateau[i][j].couleur == BLANC){
           if(jeu->plateau[i-1][j+1].pion == 0){
             coord_numero(*jeu,i,j,&numero1);
@@ -341,7 +341,8 @@ int capture_est_possible_alea(jeu_t jeu, int * numero1, int * numero2,char * dep
       if((jeu.tour == BLANC && jeu.plateau[i][j].couleur == BLANC) || (jeu.tour == NOIR && jeu.plateau[i][j].couleur == NOIR)){
           coord_numero(jeu, i, j, numero1);
           if (captures_dame_possibles(&jeu,i,j,bourreaux,&n,numero2))
-            sprintf(deplacement,"%dx%d Dame \n", *numero1, *numero2);
+            printf("%dx%d Dame\n",*numero1,*numero2);
+            sprintf(deplacement,"%dx%d", *numero1, *numero2);
           }
         }
 
@@ -350,7 +351,7 @@ int capture_est_possible_alea(jeu_t jeu, int * numero1, int * numero2,char * dep
         if((jeu.tour == BLANC && jeu.plateau[i][j].couleur == BLANC) || (jeu.tour == NOIR && jeu.plateau[i][j].couleur == NOIR)){
           coord_numero(jeu, i, j, numero1);
           if(pion_peut_capturer(jeu, *numero1, numero2)){
-            sprintf(deplacement,"%dx%d\n", *numero1, *numero2);
+            sprintf(deplacement,"%dx%d", *numero1, *numero2);
             bourreaux[n].t[0] = *numero1;
             bourreaux[n].t[1] = *numero2;
             n++;
@@ -397,7 +398,7 @@ void ajouter_deplacement(uint8_t * oct,int * pos,char * deplacement){
 {
     oct[*pos] = atoi(dep)+128;
     *pos = *pos +1;
-    dep = strtok(NULL,"-");
+    dep = strtok(NULL,"-x");
    
 }
 }
@@ -407,7 +408,7 @@ void ajouter_capture(uint8_t * oct,int * pos,char * capture){
 {
     oct[*pos] =  atoi(dep);
     *pos = *pos + 1;
-    dep = strtok(NULL,"x");
+    dep = strtok(NULL,"x-");
 }
 oct[*pos -1 ] = oct[*pos -1] +128;
 }

@@ -97,7 +97,7 @@ int main()
         la date, l'heure et de l'adresse du client qui se connecte au serveur*/
       time_t now = time(NULL);
       char date_heure[32], log_mess[256];
-      strftime(date_heure, 32, "%F:T", localtime(&now));
+      strftime(date_heure, 32, "%F:%T", localtime(&now));
       sprintf(log_mess, "%s : connection avec %s\n", date_heure, addr_char);
 			pthread_mutex_lock(&mut);
 			write(fic, log_mess, strlen(log_mess));
