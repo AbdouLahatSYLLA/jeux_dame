@@ -221,6 +221,9 @@ int saisir_deplacement(char * deplacement, int * x1, int * y1, int * x2, int * y
 void capturer(jeu_t * jeu, int numero1, int numero2, int * x1, int * y1, int * x2, int * y2){
   numero_coord(*jeu, numero1, x1, y1);
   numero_coord(*jeu, numero2, x2, y2);
+  if(jeu->plateau[*x1][*y1].dame == 1){
+    capturer_avec_une_dame(jeu,numero1,numero2,x1,y1,x2,y2);
+  }
   deplacer_pion(jeu, *x1, *y1, *x2, *y2);
   if(*x1 > *x2){
     if(*y1 > *y2){
@@ -250,6 +253,7 @@ void capturer(jeu_t * jeu, int numero1, int numero2, int * x1, int * y1, int * x
       *y2 = *y2 + 1;
     }
   }
+  deplacer_pion(jeu,*x1,*y1,*x2,*y2);
 }
 
 void numero_coord(jeu_t jeu, int numero, int * x, int * y){
@@ -302,7 +306,9 @@ int verifier_capture(jeu_t jeu, int numero1, int numero2){
   int x1, y1, x2, y2;
   numero_coord(jeu, numero1, &x1, &y1);
   numero_coord(jeu, numero2, &x2, &y2);
-
+  if(jeu.plateau[x1][y1].dame == 1) {
+    return dame_peut_capturer(&jeu,x1,y1,x2,y2);
+  }
   if(jeu.plateau[x1][y1].pion && jeu.plateau[x1][y1].dame == 0 ){
     if(jeu.plateau[x2][y2].pion){
       if(jeu.plateau[x1][y1].couleur != jeu.plateau[x2][y2].couleur){

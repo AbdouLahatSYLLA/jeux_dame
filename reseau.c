@@ -427,3 +427,103 @@ void concatener_octets(uint8_t * dest,uint8_t*src,int *n){
     *n = *n + 1;
   }
 }
+int verifier_coup(char * deplacement, int * x1, int * y1, int * x2, int * y2, int tour, jeu_t * jeu){
+    printf("\n%s : ",jeu->tour == 1 ? "\033[36;01mBlanc\033[00m" : "\033[31;01mNoir\033[00m");
+    int mouvement = 3;
+    int numero1, numero2;
+    
+    for(int i = 0; i < strlen(deplacement); i++){
+      if(deplacement[i] == '-'){
+        mouvement = 1;
+        break;
+      }
+      if(deplacement[i] == 'x'){
+        mouvement = 2;
+        break;
+      }
+    }
+    if(mouvement == 1){
+      printf("\nIl s'agit d'un déplacement.\n");
+      sscanf(deplacement, "%d-%d", &numero1, &numero2);
+      if(verifier_deplacement(*jeu, numero1, numero2)){
+        numero_coord(*jeu, numero1, x1, y1);
+        numero_coord(*jeu, numero2, x2, y2);
+
+        if(jeu->plateau[*x1][*y1].dame == 1){
+        deplacer_dame(jeu,*x1,*y1,*x2,*y2);
+        }
+
+        return mouvement;
+      }
+      return 3;
+    }
+    if(mouvement == 2){
+      int captures[50];
+      int n = 0;
+      printf("\nIl s'agit d'une capture.\n");
+      sscanf(deplacement, "%dx%d", &numero1, &numero2);
+      char * capture;
+      capture = strtok(deplacement,"x");
+      while (capture != NULL)
+      {
+       captures[n] = atoi(capture); 
+       n++;
+       capture = strtok(NULL,"x");
+      }
+      int i = 0;
+      int x,y,z,b;
+      int res ;
+      res = capture[0];
+      while (i < n -1 )
+      {
+        if(!verifier_capture(*jeu,res,captures[i+1])){
+          return 3;
+        }
+        pion_derriere(*jeu,res,captures[i+1],&res);
+        i++;
+      }
+      i = 0;
+       while (i < n -1 )
+      {
+          capturer(jeu,captures[i],captures[i+1],&x,&y,&z,&b);
+          coord_numero(*jeu,z,b,&captures[i+1]);
+          i++;
+      }
+      return mouvement;
+     
+    }
+    if(mouvement == 3){
+      printf("Il ne s'agit ni d'un déplacement ni d'une capture.\n");
+      printf("%s\n",deplacement);
+      return 3;
+    }
+    return 3;
+}
+
+
+void pion_derriere(jeu_t jeu,int num1,int num2,int * res){
+  int x1,y1,x2,y2;
+  numero_coord(jeu,num1,&x1,&y1);
+  numero_coord(jeu,num2,&x2,&y2);
+  if(x1 > x2){
+    if(y1 > y2){
+      x2 = x2 - 1;
+      y2 = y2 - 1;
+    }
+    else{
+      x2 = x2 - 1;
+      y2 = y2 + 1;
+    }
+  }
+  else{
+    if(y1 > y2){
+      x2 = x2 + 1;
+      y2 = y2 - 1;
+    }
+    else{
+      x2 = x2 + 1;
+      y2 = y2 + 1;
+    }
+  }
+coord_numero(jeu,x2,y2,res);
+}

@@ -34,8 +34,12 @@ int main()
 {
   pthread_t th;
   uint8_t rapport[256];
+  char dep2[100];
   uint8_t recu[20];
-
+  char mauvais_coup[] = "MAUVAIS_COUP";
+	char perdu[] = "PERDU";
+	char egalite[] = "EGALITE";
+	char interruption[] = "INTERRUPTION";
   rapport[0] = 255;
   int n = 1;
   /* Création/Ouverture d'un fichier servant de journal de connections */
@@ -106,36 +110,54 @@ int main()
 
   /*Création et initialisation d'un jeu*/
   jeu_t jeu ;
+  int x1,y1,x2,y2;
   initialiser_jeu(&jeu);
   /*Les blancs vont commencer la partie*/
   /*Pour l'attaquant*/
 	int pion_noirs,pion_blancs;
   /*Pour le défenseur*/
+  jeu.tour = BLANC;
 	while (jeu.en_cours)
 	{
 		printf("Coup n° %d \n",jeu.nb_coups);
 		afficher_jeu(jeu);
 		jouer(&jeu,deplacement,rapport,&n,recu);
-	    jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
 		faire_dames(&jeu);
 		pion_noirs = compter_pions(NOIR,&jeu);
 		pion_blancs = compter_pions (BLANC,&jeu);
-		if(pion_noirs == 0 || pion_blancs == 0 || jeu.nb_coups == 100){
-			jeu.en_cours = 0;
-			envoyer_jeu(&jeu,sock_echange);
-			write(sock_echange,recu,sizeof(recu));
+		if(write(sock_echange,deplacement,strlen(deplacement) +1) <= 0){
+			write(sock_echange,interruption,strlen(interruption)+1);
 			break;
 		}
-		envoyer_jeu(&jeu,sock_echange);
-		write(sock_echange,recu,sizeof(recu));
-		recevoir_jeu(&jeu,sock_echange);
-		read(sock_echange,recu,sizeof(recu));
-		concatener_octets(rapport,recu,&n);
+		if(read(sock_echange,deplacement,sizeof(deplacement)) <=0){
+			write(sock_echange,interruption,strlen(interruption)+1);
+			break;
+		}
+		strcpy(dep2,deplacement);
+		if(verifier_coup(deplacement, &x1,&y1,&x2, &y2,NOIR, &jeu) == 1){
+			ajouter_deplacement(rapport,&n,dep2);
+		}
+		
+		else if(verifier_coup(deplacement, &x1,&y1,&x2,&y2,NOIR, &jeu) == 2){
+			ajouter_capture(rapport,&n,dep2);
+		}
+		else if (verifier_coup(deplacement, &x1,&y1,&x2,&y2,NOIR, &jeu) == 3)
+		{
+			write(sock_echange,mauvais_coup,strlen(mauvais_coup) +1);
+			close(sock_echange);
+			exit(2);
+		}
+		faire_dames(&jeu);
 		afficher_jeu(jeu);
+		jeu.nb_coups ++;
 	    pion_noirs = compter_pions(NOIR,&jeu);
     	pion_blancs = compter_pions(BLANC,&jeu);
-    	if(pion_noirs == 0 || pion_blancs == 0 || jeu.nb_coups == 100){
-			jeu.en_cours = 0;
+    	if(pion_blancs == 0 ){
+			write(sock_echange,perdu,strlen(perdu)+1);
+			break;
+		}
+		if(jeu.nb_coups == 99){
+			write(sock_echange,egalite,strlen(egalite)+1);
 			break;
 		}
     }
