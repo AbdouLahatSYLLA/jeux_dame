@@ -14,7 +14,7 @@
 #include "reseau.h"
 #include "dames.h"
 
-#define PORT_INCP 49153
+#define PORT_INCP 7777
 
 char deplacement[100];
 char dep2[100];
@@ -77,14 +77,14 @@ int main(int argc, char *argv[])
 	/* 4. Échange avec le serveur */
 	/* 4.1 Construction de la requête INCP */
 	 jeu_t jeu;
-	 initialiser_jeu(&jeu);
 	 jeu.en_cours =1;
-	 	 jeu.tour = NOIR;
 	int x1,y1,x2,y2;
 	 initialiser_jeu(&jeu);
+	 jeu.tour = BLANC;
 	while (jeu.en_cours)
 	{
 		read(sock,deplacement,sizeof(deplacement));
+		printf("Recu %s \n",deplacement);
 		if(!strcmp(deplacement,interruption)){
 			jeu.en_cours = 0;
 			break;
@@ -98,14 +98,14 @@ int main(int argc, char *argv[])
 			break;
 		}
 		strcpy(dep2,deplacement);
-		if(verifier_coup(deplacement, &x1,&y1,&x2, &y2,NOIR, &jeu) == 1){
+		if(verifier_coup(deplacement, &x1,&y1,&x2,&y2,BLANC,&jeu) == 1){
 			ajouter_deplacement(rapport,&n,dep2);
 		}
 		
-		else if(verifier_coup(deplacement, &x1,&y1,&x2,&y2,NOIR, &jeu) == 2){
+		else if(verifier_coup(deplacement, &x1,&y1,&x2,&y2,BLANC, &jeu) == 2){
 			ajouter_capture(rapport,&n,dep2);
 		}
-		else if (verifier_coup(deplacement, &x1,&y1,&x2,&y2,NOIR, &jeu) == 3)
+		else if (verifier_coup(deplacement, &x1,&y1,&x2,&y2,BLANC, &jeu) == 3)
 		{
 			write(sock,mauvais_coup,strlen(mauvais_coup) +1);
 			close(sock);
@@ -116,11 +116,15 @@ int main(int argc, char *argv[])
 		//Concat octets
 		faire_dames(&jeu);
 		jeu.nb_coups++;
+	    jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
 		printf("Coup n° %d \n",jeu.nb_coups);
 		jouer(&jeu,deplacement,rapport,&n,recu);
+		printf("coup attaque :%s \n",deplacement);
 		faire_dames(&jeu);
 		afficher_jeu(jeu);
-		write(sock,deplacement,sizeof(deplacement));
+		write(sock,deplacement,strlen(deplacement)+1);
+		jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
+
 
 
 	}

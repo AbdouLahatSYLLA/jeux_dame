@@ -169,7 +169,6 @@ void afficher_jeu(jeu_t jeu){
 
 int saisir_deplacement(char * deplacement, int * x1, int * y1, int * x2, int * y2, int tour, jeu_t * jeu){
     printf("\n%s : ",jeu->tour == 1 ? "\033[36;01mBlanc\033[00m" : "\033[31;01mNoir\033[00m");
-    //scanf("%s", deplacement);
     int mouvement = 3;
     int numero1, numero2;
     int x,y,z,b;
@@ -429,12 +428,12 @@ int capture_est_possible(jeu_t jeu, int * numero1, int * numero2,char * deplacem
 }
 
 int choisir_capture(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero1,int *numero2,char * deplacement){
-  //char choix[50];
+  char choix[50];
   int poubelle;
   putchar('\n');
   while(1){
     printf("Entrer la capture à effectuer : ");
-    //scanf("%s", choix);
+    scanf("%s", choix);
     sscanf(deplacement, "%dx%d", numero1,numero2);
 
     if(capture_appartient(jeu, bourreaux, taille, deplacement)){
@@ -447,6 +446,7 @@ int choisir_capture(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero1,int
 
 int capture_appartient(jeu_t jeu, tabi_t bourreaux[], int taille, char capture[]){
   int numero1, numero2, poubelle1, poubelle2;
+  printf("Captureeeee %s \n",capture);
   for(int i = 0; i < taille; i++){
     sscanf(capture, "%dx%d", &numero1, &numero2);
     if(bourreaux[i].t[0] == numero1){

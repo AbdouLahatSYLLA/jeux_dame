@@ -30,6 +30,7 @@ void copier_ipv6(uint8_t * oct,int * pos,unsigned char * addr);
 void concatener_octets(uint8_t * dest,uint8_t *src,int *n);
 int verifier_coup(char * deplacement, int * x1, int * y1, int * x2, int * y2, int tour, jeu_t * jeu);
 void pion_derriere(jeu_t jeu,int num1,int num2,int * res);
+void move_alea(jeu_t jeu, int couleur,char * deplacement);
 //void Robot_joueur(jeu_t * jeu);
 
 

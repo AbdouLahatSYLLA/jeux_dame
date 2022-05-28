@@ -42,7 +42,7 @@ int main(int argc, char ** argv){
       numero_coord(jeu,numero2,&c,&d);
       if(verifier_dame(&jeu,a,b) && dame_peut_capturer(&jeu,a,b,c,d)){
         capturer_avec_une_dame(&jeu,numero1,numero2,&a,&b,&c,&d);
-        sprintf(deplacement,"%dx%d\n",numero1,numero2);
+        sprintf(deplacement,"%dx%d",numero1,numero2);
         printf("%dx%d\n",numero1,numero2);
         int n = 0;
         numero1 = numero2;
@@ -351,7 +351,6 @@ int choisir_capture_alea(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero
   *numero2 = bourreaux[alea].t[1];
   sprintf(deplacement, "%dx%d", numero1, numero2);
    if(capture_appartient(jeu, bourreaux, taille, deplacement)){
-      sprintf(deplacement, "%dx%d", numero1, numero2);
       return 1;
     }
   putchar('\n');

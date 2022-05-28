@@ -117,6 +117,7 @@
      char copie[100];
      char suite[10];
      if(capture_est_possible_alea(*jeu, &numero1, &numero2,deplacement)){
+       printf("Choix %s \n",deplacement);
       int a,b,c,d;
       numero_coord(*jeu,numero1,&a,&b);
       numero_coord(*jeu,numero2,&c,&d);
@@ -139,6 +140,7 @@
            n = 0;
         }
       }
+      
       else{
         capturer(jeu, numero1, numero2, &x1, &y1, &x2, &y2);
         deplacer_pion(jeu,x1,y1,x2,y2);
@@ -152,32 +154,26 @@
         }
       }
        strcpy(copie,deplacement);
-        ajouter_capture(octets,n,deplacement);
-        ajouter_capture(dep,&x,copie);
-        dep[x] = '\0';
+        /*ajouter_capture(octets,n,deplacement);*/
+       
 
         
     }
     /*Deplacements normaux*/
     else{
       
-      if(jeu->tour == BLANC){
-        recherche_pion_qui_bouge_blanc(jeu,deplacement);
-      }
-      else if(jeu->tour == NOIR){
-        recherche_pion_qui_bouge_noir(jeu,deplacement);
-      }
-      while((move = saisir_deplacement(deplacement, &x1, &y1, &x2, &y2, jeu->tour, jeu)));
-      if(jeu->plateau[x1][y1].dame ==1 ){
+      move_alea(*jeu,jeu->tour,deplacement);
+      sscanf(deplacement,"%d-%d",&numero1,&numero2);
+      numero_coord(*jeu,numero1,&x1,&y1);
+      numero_coord(*jeu,numero2,&x2,&y2);
+      if(jeu->plateau[x1][y1].dame == 1){
         deplacer_dame(jeu,x1,y1,x2,y2);
       }
-      else
+      else{
       deplacer_pion(jeu,x1,y1,x2,y2);
-      strcpy(copie,deplacement);
-      ajouter_deplacement(octets,n,deplacement);
-      printf("Après ajout %s\n",copie);
-      ajouter_deplacement(dep,&x,copie);
-      dep[x] = '\0';
+      }
+      printf("Après ajout %s\n",deplacement);
+      
 
     }
     
@@ -382,10 +378,7 @@ int choisir_capture_alea(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero
   *numero1 = bourreaux[alea].t[0];
   *numero2 = bourreaux[alea].t[1];
   printf("Capture : %dx%d",*numero1,*numero2);
-  sprintf(deplacement, "%dx%d", numero1, numero2);
-   if(capture_appartient(jeu, bourreaux, taille, deplacement)){
-      return 1;
-    }
+  sprintf(deplacement, "%dx%d", *numero1, *numero2);
   putchar('\n');
   
   return 0;
@@ -431,7 +424,7 @@ int verifier_coup(char * deplacement, int * x1, int * y1, int * x2, int * y2, in
     printf("\n%s : ",jeu->tour == 1 ? "\033[36;01mBlanc\033[00m" : "\033[31;01mNoir\033[00m");
     int mouvement = 3;
     int numero1, numero2;
-    
+    char copie[100];
     for(int i = 0; i < strlen(deplacement); i++){
       if(deplacement[i] == '-'){
         mouvement = 1;
@@ -452,6 +445,11 @@ int verifier_coup(char * deplacement, int * x1, int * y1, int * x2, int * y2, in
         if(jeu->plateau[*x1][*y1].dame == 1){
         deplacer_dame(jeu,*x1,*y1,*x2,*y2);
         }
+        else
+        {
+          deplacer_pion(jeu,*x1,*y1,*x2,*y2);
+        }
+        
 
         return mouvement;
       }
@@ -461,31 +459,40 @@ int verifier_coup(char * deplacement, int * x1, int * y1, int * x2, int * y2, in
       int captures[50];
       int n = 0;
       printf("\nIl s'agit d'une capture.\n");
-      sscanf(deplacement, "%dx%d", &numero1, &numero2);
+      strcpy(copie,deplacement);
+      //sscanf(deplacement, "%dx%d", &numero1, &numero2);
       char * capture;
-      capture = strtok(deplacement,"x");
+      capture = strtok(copie,"x");
       while (capture != NULL)
       {
+        printf("%d %s\n",atoi(capture),capture);
        captures[n] = atoi(capture); 
        n++;
        capture = strtok(NULL,"x");
       }
+      printf("Deplacement : %s Copie : %s \n",deplacement,copie);
       int i = 0;
       int x,y,z,b;
-      int res ;
-      res = capture[0];
+      int res ,k;
+      res = captures[0];
+       puts("Accès 1");
       while (i < n -1 )
       {
+                puts("Accès");
+
         if(!verifier_capture(*jeu,res,captures[i+1])){
           return 3;
         }
-        pion_derriere(*jeu,res,captures[i+1],&res);
+        puts("Accès");
+        pion_derriere(*jeu,res,captures[i+1],&k);
         i++;
       }
       i = 0;
-       while (i < n -1 )
+      //res =
+       while (i < n -1  )
       {
           capturer(jeu,captures[i],captures[i+1],&x,&y,&z,&b);
+          puts("Okey");
           coord_numero(*jeu,z,b,&captures[i+1]);
           i++;
       }
@@ -526,4 +533,52 @@ void pion_derriere(jeu_t jeu,int num1,int num2,int * res){
     }
   }
 coord_numero(jeu,x2,y2,res);
+}
+
+void move_alea(jeu_t jeu, int couleur,char *deplacement){
+  int tab1[50];
+  int tab2[50];
+  int n = 0, numero1, numero2;
+  for(int i = 0; i < 10; i++){
+    for(int j = 0; j < 10; j++){
+      coord_numero(jeu, i, j, &numero1);
+      if(jeu.plateau[i][j].pion == 1){
+        if(jeu.plateau[i][j].couleur == couleur){
+          if(jeu.plateau[i][j].couleur == BLANC){
+            if(jeu.plateau[i - 1][j + 1].pion == 0){
+              coord_numero(jeu, i - 1, j + 1, &numero2);
+              tab1[n] = numero1;
+              tab2[n] = numero2;
+              n++;
+            }
+            if(jeu.plateau[i - 1][j - 1].pion == 0){
+              coord_numero(jeu, i - 1, j - 1, &numero2);
+              tab1[n] = numero1;
+              tab2[n] = numero2;
+              n++;
+            }
+          }
+          if(jeu.plateau[i][j].couleur == NOIR){
+            if(jeu.plateau[i + 1][j + 1].pion == 0){
+              coord_numero(jeu, i + 1, j + 1, &numero2);
+              tab1[n] = numero1;
+              tab2[n] = numero2;
+              n++;
+            }
+            if(jeu.plateau[i + 1][j - 1].pion == 0){
+              coord_numero(jeu, i + 1, j - 1, &numero2);
+              tab1[n] = numero1;
+              tab2[n] = numero2;
+              n++;
+            }
+          }
+        }
+      }
+    }
+  }
+  srandom(time(NULL));
+  int alea = rand() % n;
+  printf("choix %d-%d\n",tab1[alea],tab2[alea]);
+  sprintf(deplacement,"%d-%d",tab1[alea],tab2[alea]);
+  return ;
 }

@@ -122,17 +122,14 @@ int main()
 		printf("Coup n° %d \n",jeu.nb_coups);
 		afficher_jeu(jeu);
 		jouer(&jeu,deplacement,rapport,&n,recu);
+		printf("coup : %s  %d \n",deplacement,strlen(deplacement));
 		faire_dames(&jeu);
+		jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
 		pion_noirs = compter_pions(NOIR,&jeu);
 		pion_blancs = compter_pions (BLANC,&jeu);
-		if(write(sock_echange,deplacement,strlen(deplacement) +1) <= 0){
-			write(sock_echange,interruption,strlen(interruption)+1);
-			break;
-		}
-		if(read(sock_echange,deplacement,sizeof(deplacement)) <=0){
-			write(sock_echange,interruption,strlen(interruption)+1);
-			break;
-		}
+		write(sock_echange,deplacement,strlen(deplacement)+1);
+		
+		read(sock_echange,deplacement,sizeof(deplacement));
 		strcpy(dep2,deplacement);
 		if(verifier_coup(deplacement, &x1,&y1,&x2, &y2,NOIR, &jeu) == 1){
 			ajouter_deplacement(rapport,&n,dep2);
@@ -150,6 +147,7 @@ int main()
 		faire_dames(&jeu);
 		afficher_jeu(jeu);
 		jeu.nb_coups ++;
+		jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
 	    pion_noirs = compter_pions(NOIR,&jeu);
     	pion_blancs = compter_pions(BLANC,&jeu);
     	if(pion_blancs == 0 ){
@@ -194,3 +192,4 @@ void resultat_jeu(jeu_t *jeu){
       	printf("Egalite\n");
     	}
 }
+
