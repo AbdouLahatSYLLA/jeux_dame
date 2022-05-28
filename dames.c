@@ -542,7 +542,7 @@ int dame_peut_capturer(jeu_t * jeu, int x1, int y1, int x2, int y2){
   int i,j;
   if(x2 -1 < 0 || y2 -1 < 0 || x2 +1 > 9 || y2 + 1 > 9)
   return 0;
-  //case de meme couleur || case interdite  
+  //case de meme couleur || case interdite
   if(jeu->plateau[x2][y2].couleur == jeu->tour || jeu->plateau[x2][y2].couleur == -1 )
     return 0;
   //Haut gauche
@@ -557,7 +557,7 @@ int dame_peut_capturer(jeu_t * jeu, int x1, int y1, int x2, int y2){
     {
       return jeu->plateau[x2 -1 ][y2 + 1].pion == 0;
     }
-    // Bas gauche 
+    // Bas gauche
     if (x2 > x1 && y2 < y1)
     {
       return jeu->plateau[x2 +1 ][y2 - 1].pion == 0;
@@ -645,8 +645,8 @@ int captures_dame_possibles(jeu_t * jeu, int x1, int  y1, tabi_t boureaux[],int 
     }
     res = hg + hd + bg + bd;
     return  res;
-    
-      
+
+
 }
 
 int verfier_haut_gauche(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t boureaux[],int n1){
@@ -668,7 +668,7 @@ int verfier_haut_gauche(jeu_t *jeu,int x1,int y1,int * capture, int *n,tabi_t bo
       }
     i--;
     j--;
-        
+
     }
     return 0;
 }
@@ -678,10 +678,10 @@ int verfier_haut_droite(jeu_t *jeu,int x1,int y1,int * capture,int * n,tabi_t bo
   int n2;
    i--;
    j++;
-   
+
    while (i > 0 && j < 10)
     {
-     
+
       if(jeu->plateau[i][j].pion == 1){
         if(dame_peut_capturer(jeu,x1,y1,i,j)){
          coord_numero(*jeu,i,j,&n2);
@@ -694,7 +694,7 @@ int verfier_haut_droite(jeu_t *jeu,int x1,int y1,int * capture,int * n,tabi_t bo
 
       i--;
       j++;
-       
+
     }
     return 0;
 }
@@ -703,10 +703,10 @@ int verfier_bas_gauche(jeu_t *jeu,int x1,int y1,int * capture,int * n,tabi_t bou
   int j = y1;
   int n2;
    i++;
-   j--;     
+   j--;
    while (i < 10 && j > 0)
     {
-      
+
       if(jeu->plateau[i][j].pion == 1){
         if(dame_peut_capturer(jeu,x1,y1,i,j)){
          coord_numero(*jeu,i,j,&n2);
@@ -718,7 +718,7 @@ int verfier_bas_gauche(jeu_t *jeu,int x1,int y1,int * capture,int * n,tabi_t bou
       }
       i++;
       j--;
-     
+
     }
     return 0;
 }
@@ -747,61 +747,3 @@ int verfier_bas_droite(jeu_t *jeu,int x1,int y1,int * capture,int * n,tabi_t bou
     return 0;
 }
 //on veut le plus long chemin pour le bot
-
-
-
-
-/*
-int captures_dame_possibles(jeu_t * jeu, int numero1, int * x1, int * y1, int  x2, int  y2,int *a, int *b,tabi_t boureaux[],int *n) {
-  int score=0;
-  if(dame_peut_capturer(jeu, *x1, *y1, *x2, *y2)){
-    int i = *x1;
-    int j = *y1;
-    int k = x2;
-    int l = y2;
-
-    // on parcourt toutes le cases de la case courante à la case destination
-    while(1){
-      if (dame_peut_capturer(jeu,i,j,k,l)) {
-        boureaux[]
-        *a = k;
-        *b = l;
-      }
-      else
-        break;
-
-
-       //Haut gauche
-      if(k < i && l < j ){
-        k--;
-        l--;
-      }
-      //Haut droite
-      else if (k < i && l > j)
-      {
-        k--;
-        l++;
-      }
-      // Bas gauche
-      else if (k> i && l < j)
-      {
-        k++;
-        l--;
-      }
-      // Bas droite
-      else if (k > i && l > j)
-      {
-       k++;
-       l++;
-      }
-
-      if (k < 0 || k > 9 || l < 0 || l > 9) {
-        break;
-      }
-      else{ //on deplace le pion, rien a capture entre les départ et arrivée
-        deplacer_dame(*jeu,x1,y1,i,j);
-      }
-    }
-  //}
-  return score;
-}*/

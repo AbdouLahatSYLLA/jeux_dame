@@ -56,19 +56,19 @@ int main(int argc, char *argv[])
 				cur = cur->ai_next;
 				continue;
 				}
-		int cn = connect(sock, cur->ai_addr, cur->ai_addrlen);		
+		int cn = connect(sock, cur->ai_addr, cur->ai_addrlen);
 		  if(cn == 0){
 			  struct sockaddr_in6 * ipv6 = (struct sockaddr_in6 *) cur->ai_addr;
 			  copier_ipv6(rapport,&n,ipv6->sin6_addr.s6_addr);
 			  puts("Connexion reussie");
 			  break;
 		  }
-		cur = cur->ai_next ; 
+		cur = cur->ai_next ;
 	  }
-	  
+
 	freeaddrinfo(cur);
 		/* Tentative de connection */
-		
+
 	int pion_blancs,pion_noirs;
     jeu_t  jeu ;
 	/* 4. Échange avec le serveur */
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 
    	else if(pion_blancs == 0){
     	  printf("Victoire des noirs\n");
-      		
+
    		 }
 
    	   else if(jeu.nb_coups == 100){
@@ -113,9 +113,9 @@ int main(int argc, char *argv[])
     	}
 
 	close(sock);
-	/*for(n;n < 256;n++){
+	for(n;n < 256;n++){
 		rapport[n] = '\0';
-	}*/
+	}
 	printf("%d octets\n",n);
 	for ( int i = 0; i < n; i++)
 	{

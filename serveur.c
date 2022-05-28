@@ -142,9 +142,9 @@ int main()
 	resultat_jeu(&jeu);
 	close(sock_echange);
 	close(sock);
-/*	for(n;n < 256;n++){
+	for(n;n < 256;n++){
 		rapport[n] = 0;
-	}*/
+	}
 	printf("%d octets\n",n);
 	for ( int i = 0; i < n; i++)
 	{
@@ -153,7 +153,7 @@ int main()
 	putchar('\n');
 	return 0;
 }
-	
+
 
 
 //DEHOOOOORS
@@ -172,5 +172,3 @@ void resultat_jeu(jeu_t *jeu){
       	printf("Egalite\n");
     	}
 }
-
-
