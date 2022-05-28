@@ -21,7 +21,7 @@ typedef struct{
     int sock;
 }client;
 
-#define PORT_INCP 49153
+#define PORT_INCP 7777
 
 sem_t attaquant;
 sem_t defense;
@@ -120,7 +120,7 @@ int main()
 		pion_noirs = compter_pions(NOIR,&jeu);
 		pion_blancs = compter_pions (BLANC,&jeu);
 		printf("BLANC : %s \n",deplacement);
-		write(sock_echange,deplacement,sizeof(deplacement));
+		write(sock_echange,deplacement,strlen(deplacement)+1);
 		afficher_jeu(jeu);
 		read(sock_echange,deplacement,sizeof(deplacement));
 		printf("NOIR : %s \n",deplacement);

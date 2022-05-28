@@ -32,6 +32,7 @@ int tester_coup(jeu_t jeu,char * coup);
 void appliquer_coup(jeu_t *jeu,char * coup);
 int est_deplacement (char * coup);
 int est_capture(char * coup);
+void convertir_octets_chaine(uint8_t * oct,char *deplacement);
 //void Robot_joueur(jeu_t * jeu);
 
 

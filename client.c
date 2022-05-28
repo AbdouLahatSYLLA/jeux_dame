@@ -14,7 +14,7 @@
 #include "reseau.h"
 #include "dames.h"
 
-#define PORT_INCP 49153
+#define PORT_INCP 7777
 
 char deplacement[100];
 
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 
 	/* 1. Création d'une socket tcp ipv6 */
 	uint8_t rapport[256];
-	uint8_t recu[20];
+	uint8_t recu[50];
   	rapport[0] = 1;
 	int n = 1;
 	/* Création de la sockaddr */
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 
 		struct addrinfo *cur;
 
-	  if ((stat = getaddrinfo(argv[1], "49153", &hints, &cur)) != 0) {
+	  if ((stat = getaddrinfo(argv[1], "7777", &hints, &cur)) != 0) {
 	      printf("%s\n", gai_strerror(stat));
 	      return 2;
 	  }
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 		afficher_jeu(jeu);
 		jouer(&jeu,deplacement,rapport,&n,recu);
 		faire_dames(&jeu);
-		write(sock,deplacement,sizeof(deplacement));
+		write(sock,deplacement,strlen(deplacement) +1);
 		afficher_jeu(jeu);
 		pion_noirs = compter_pions(NOIR,&jeu);
 		pion_blancs = compter_pions (BLANC,&jeu);
