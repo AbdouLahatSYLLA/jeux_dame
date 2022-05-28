@@ -4,7 +4,7 @@
 #include <string.h>
 #include "dames.h"
 #include <stdint.h>
-
+#include <string.h>
 /* bibliothèque standard unix */
 #include <unistd.h> /* close, read, write */
 #include <sys/types.h>
@@ -151,10 +151,9 @@
           coord_numero(*jeu, x2, y2, &numero1);
         }
       }
-       strcpy(copie,deplacement);
-        ajouter_capture(octets,n,deplacement);
+        strcpy(copie,deplacement);
+        ajouter_capture(octets,n,copie);
         ajouter_capture(dep,&x,copie);
-        dep[x] = '\0';
 
         
     }
@@ -174,14 +173,12 @@
       else
       deplacer_pion(jeu,x1,y1,x2,y2);
       strcpy(copie,deplacement);
-      ajouter_deplacement(octets,n,deplacement);
+      ajouter_deplacement(octets,n,copie);
       printf("Après ajout %s\n",copie);
-      ajouter_deplacement(dep,&x,copie);
-      dep[x] = '\0';
 
     }
-    
     jeu->nb_coups++;
+    jeu->tour = jeu->nb_coups % 2 == 0 ? BLANC : NOIR;
  }
 /*
  void Robot_joueur(jeu_t * jeu,int sock){
@@ -382,7 +379,7 @@ int choisir_capture_alea(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero
   *numero1 = bourreaux[alea].t[0];
   *numero2 = bourreaux[alea].t[1];
   printf("Capture : %dx%d",*numero1,*numero2);
-  sprintf(deplacement, "%dx%d", numero1, numero2);
+  sprintf(deplacement, "%dx%d", *numero1, *numero2);
    if(capture_appartient(jeu, bourreaux, taille, deplacement)){
       return 1;
     }
@@ -426,4 +423,108 @@ void concatener_octets(uint8_t * dest,uint8_t*src,int *n){
     dest[*n] = *c;
     *n = *n + 1;
   }
+}
+
+
+int tester_coup(jeu_t jeu,char * coup){
+  char test[100];
+  int num1,num2,x1,y1,x2,y2;
+  strcpy(test,coup);
+  if(est_deplacement(coup)){
+    sscanf(test,"%d-%d",&num1,&num2);
+    if(verifier_deplacement(jeu,num1,num2)){
+      return 1;
+    }
+  }
+  else if(est_capture(coup)){
+    char *tmp = strtok(test,"x");
+    num1 = atoi(tmp);
+    while (tmp != NULL)
+    {
+      tmp = strtok(NULL,"x");
+      if(tmp == NULL){
+        break;
+      }
+      num2 = atoi(tmp);
+      if(!verifier_capture(jeu,num1,num2)){
+       return 0;
+      }
+      else
+      {
+        capturer(&jeu,num1,num2,&x1,&y1,&x2,&y2);
+        coord_numero(jeu,x2,y2,&num1);
+      }
+      
+    }
+    return 1;
+  }
+  return 0;
+}
+
+void appliquer_coup(jeu_t *jeu,char * coup){
+  char test[100];
+  int num1,num2,x1,y1,x2,y2;
+  strcpy(test,coup);
+  if(est_deplacement(coup)){
+    sscanf(test,"%d-%d",&num1,&num2);
+      numero_coord(*jeu,num1,&x1,&y1);
+      numero_coord(*jeu,num2,&x2,&y2);
+      if(jeu->plateau[x1][y1].dame == 1){
+        deplacer_dame(jeu,x1,y1,x2,y2);
+      }
+      else
+      {
+        deplacer_pion(jeu,x1,y1,x2,y2);
+      }
+      
+  }
+  else if(est_capture(coup)){
+    char *tmp = strtok(test,"x");
+    num1 = atoi(tmp);
+    while (tmp != NULL)
+    {
+      tmp = strtok(NULL,"x");
+      if(tmp == NULL){
+        break;
+      }
+      num2 = atoi(tmp);
+        capturer(jeu,num1,num2,&x1,&y1,&x2,&y2);
+        coord_numero(*jeu,x2,y2,&num1);
+    }
+  }
+  jeu->nb_coups++;
+  jeu->tour = jeu->nb_coups % 2 == 0 ? BLANC : NOIR;
+}
+int est_deplacement (char * coup){
+  char * c = coup;
+  int cpt = 0;
+  while (*c != '\0')
+  {
+    if(*c =='x'){
+      return 0;
+    }
+    if(*c == '-'){
+      cpt++;
+    }
+    c++;
+  }
+  if (cpt > 1){
+    return 0;
+  }
+  return 1;
+}
+int est_capture(char * coup){
+  char * c = coup;
+    int cpt = 0;
+  while (*c != '\0')
+  {
+    if(*c =='x'){
+      cpt++;
+    }
+    if(*c == '-'){
+      return 0;
+    }
+    c++;
+  }
+  return cpt;
 }

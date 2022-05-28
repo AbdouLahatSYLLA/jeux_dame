@@ -28,6 +28,10 @@ void ajouter_deplacement(uint8_t * oct,int * pos,char * deplacement);
 void ajouter_capture(uint8_t * oct,int * pos,char * capture);
 void copier_ipv6(uint8_t * oct,int * pos,unsigned char * addr);
 void concatener_octets(uint8_t * dest,uint8_t *src,int *n);
+int tester_coup(jeu_t jeu,char * coup);
+void appliquer_coup(jeu_t *jeu,char * coup);
+int est_deplacement (char * coup);
+int est_capture(char * coup);
 //void Robot_joueur(jeu_t * jeu);
 
 

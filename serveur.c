@@ -109,47 +109,53 @@ int main()
   initialiser_jeu(&jeu);
   /*Les blancs vont commencer la partie*/
   /*Pour l'attaquant*/
-	int pion_noirs,pion_blancs;
+	int pion_noirs,pion_blancs,test;
   /*Pour le défenseur*/
 	while (jeu.en_cours)
 	{
 		printf("Coup n° %d \n",jeu.nb_coups);
-		afficher_jeu(jeu);
 		jouer(&jeu,deplacement,rapport,&n,recu);
 	    jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
 		faire_dames(&jeu);
 		pion_noirs = compter_pions(NOIR,&jeu);
 		pion_blancs = compter_pions (BLANC,&jeu);
-		if(pion_noirs == 0 || pion_blancs == 0 || jeu.nb_coups == 100){
-			jeu.en_cours = 0;
-			envoyer_jeu(&jeu,sock_echange);
-			write(sock_echange,recu,sizeof(recu));
+		printf("BLANC : %s \n",deplacement);
+		write(sock_echange,deplacement,sizeof(deplacement));
+		afficher_jeu(jeu);
+		read(sock_echange,deplacement,sizeof(deplacement));
+		printf("NOIR : %s \n",deplacement);
+		test = tester_coup(jeu,deplacement);
+		if(test == 0){
+			write(sock_echange,"INVALIDE",strlen("INVALIDE")+1);
 			break;
 		}
-		envoyer_jeu(&jeu,sock_echange);
-		write(sock_echange,recu,sizeof(recu));
-		recevoir_jeu(&jeu,sock_echange);
-		read(sock_echange,recu,sizeof(recu));
-		concatener_octets(rapport,recu,&n);
+		appliquer_coup(&jeu,deplacement);
+		printf("Coup n° %d \n",jeu.nb_coups);
 		afficher_jeu(jeu);
 	    pion_noirs = compter_pions(NOIR,&jeu);
     	pion_blancs = compter_pions(BLANC,&jeu);
-    	if(pion_noirs == 0 || pion_blancs == 0 || jeu.nb_coups == 100){
+    	if( jeu.nb_coups == 100){
 			jeu.en_cours = 0;
+			write(sock_echange,"EGALITE",strlen("EGALITE")+1);
+			break;
+		}
+		if(pion_noirs == 0){
+			jeu.en_cours = 0;
+			write(sock_echange,"PERDU",strlen("PERDU")+1);
 			break;
 		}
     }
 	resultat_jeu(&jeu);
 	close(sock_echange);
 	close(sock);
-	for(n;n < 256;n++){
+	/*for(n;n < 256;n++){
 		rapport[n] = 0;
 	}
 	printf("%d octets\n",n);
 	for ( int i = 0; i < n; i++)
 	{
 		printf("%x ",rapport[i]);
-	}
+	}*/
 	putchar('\n');
 	return 0;
 }

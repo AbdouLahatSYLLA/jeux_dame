@@ -69,35 +69,42 @@ int main(int argc, char *argv[])
 	freeaddrinfo(cur);
 		/* Tentative de connection */
 
-	int pion_blancs,pion_noirs;
+	int pion_blancs,pion_noirs,test;
     jeu_t  jeu ;
+	initialiser_jeu(&jeu);
 	/* 4. Échange avec le serveur */
 	/* 4.1 Construction de la requête INCP */
-	recevoir_jeu(&jeu,sock);
-	read(sock,recu,sizeof(recu));
-	concatener_octets(rapport,recu,&n);
+	
 	while (jeu.en_cours)
 	{
 		printf("Coup n° %d \n",jeu.nb_coups);
-		jouer(&jeu,deplacement,rapport,&n,recu);
-		 jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
+		read(sock,deplacement,sizeof(deplacement));
+		test = tester_coup(jeu,deplacement);
+		if(test == 0) {
+			write(sock,"INVALIDE",strlen("INVALIDE")+1);
+			break;
+		}
+		appliquer_coup(&jeu,deplacement);
+		printf("Coup n° %d \n",jeu.nb_coups);
 		faire_dames(&jeu);
+		afficher_jeu(jeu);
+		jouer(&jeu,deplacement,rapport,&n,recu);
+		faire_dames(&jeu);
+		write(sock,deplacement,sizeof(deplacement));
 		afficher_jeu(jeu);
 		pion_noirs = compter_pions(NOIR,&jeu);
 		pion_blancs = compter_pions (BLANC,&jeu);
-		if(pion_noirs == 0 || pion_blancs == 0 || jeu.nb_coups == 100){
+		if(pion_blancs == 0 ){
+			write(sock,"PERDU",strlen("PERDU")+1);
 			jeu.en_cours = 0;
-			envoyer_jeu(&jeu,sock);
-			write(sock,recu,sizeof(recu));
 			break;
 		}
-		envoyer_jeu(&jeu,sock);
-		write(sock,recu,sizeof(recu));
-		recevoir_jeu(&jeu,sock);
-		read(sock,recu,sizeof(recu));
-		concatener_octets(rapport,recu,&n);
+		if(jeu.nb_coups == 100){
+			write(sock,"EGALITE",strlen("EGALITE")+1);
+			jeu.en_cours = 0;
+			break;
+		}
 		afficher_jeu(jeu);
-
 	}
 	if(pion_noirs == 0){
       	printf("Victoire des blancs\n");
@@ -113,14 +120,14 @@ int main(int argc, char *argv[])
     	}
 
 	close(sock);
-	for(n;n < 256;n++){
+/*	for(n;n < 256;n++){
 		rapport[n] = '\0';
 	}
 	printf("%d octets\n",n);
 	for ( int i = 0; i < n; i++)
 	{
 		printf("%x ",rapport[i]);
-	}
+	}*/
 	putchar('\n');
 	return 0;
 }
