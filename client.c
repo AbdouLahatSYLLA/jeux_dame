@@ -43,31 +43,30 @@ int main(int argc, char *argv[])
 		car les adresse ipv4 seront mappées. */
 		int stat;
 		int sock ;
-		struct addrinfo hints = { .ai_socktype = SOCK_STREAM,
-															.ai_flags = AI_V4MAPPED,
-															.ai_family = AF_INET6};
-
+		struct addrinfo hints = { .ai_flags = AI_V4MAPPED,.ai_family = AF_INET6,.ai_socktype = SOCK_STREAM};
 		struct addrinfo *cur;
-
-	  if ((stat = getaddrinfo(argv[1], "49153", &hints, &cur)) != 0) {
+	  if ((stat = getaddrinfo(argv[1], "7777", &hints, &cur)) != 0) {
 	      printf("%s\n", gai_strerror(stat));
 	      return 2;
 	  }
 	  while (cur != NULL)
 	  {
-		  sock = socket(cur->ai_family, SOCK_STREAM, 0);
+		  if(cur->ai_family == AF_INET6){
+		  sock = socket(AF_INET6, SOCK_STREAM, 0);
 			if (sock < 0) {
 				cur = cur->ai_next;
 				continue;
 				}
 		int cn = connect(sock, cur->ai_addr, cur->ai_addrlen);
 		  if(cn == 0){
-			  struct sockaddr_in6 * ipv6 = (struct sockaddr_in6 *) cur->ai_addr;
-			  copier_ipv6(rapport,&n,ipv6->sin6_addr.s6_addr);
+			 /* struct sockaddr_in6 * ipv6 = (struct sockaddr_in6 *) cur->ai_addr;
+			  copier_ipv6(rapport,&n,ipv6->sin6_addr.s6_addr);*/
 			  puts("Connexion reussie");
 			  break;
 		  }
-		cur = cur->ai_next ;
+	  }
+	  		cur = cur->ai_next ;
+
 	  }
 
 	freeaddrinfo(cur);
@@ -77,67 +76,44 @@ int main(int argc, char *argv[])
 	/* 4. Échange avec le serveur */
 	/* 4.1 Construction de la requête INCP */
 	 jeu_t jeu;
-	 jeu.en_cours =1;
 	int x1,y1,x2,y2;
 	 initialiser_jeu(&jeu);
-	 jeu.tour = BLANC;
-	while (jeu.en_cours)
+	 int res;
+	while (1)
 	{
-		read(sock,deplacement,sizeof(deplacement));
+		recv(sock,deplacement,sizeof(deplacement),MSG_NOSIGNAL);
 		printf("Recu %s \n",deplacement);
-		if(!strcmp(deplacement,interruption)){
-			jeu.en_cours = 0;
-			break;
-		}
-		if(!strcmp(deplacement,mauvais_coup)){
-			jeu.en_cours = 0;
-			break;
-		}
-		if(!strcmp(deplacement,egalite) || !strcmp(deplacement,perdu)){
-			jeu.en_cours = 0;
-			break;
-		}
 		strcpy(dep2,deplacement);
-		if(verifier_coup(deplacement, &x1,&y1,&x2,&y2,BLANC,&jeu) == 1){
-			ajouter_deplacement(rapport,&n,dep2);
-		}
-		
-		else if(verifier_coup(deplacement, &x1,&y1,&x2,&y2,BLANC, &jeu) == 2){
-			ajouter_capture(rapport,&n,dep2);
-		}
-		else if (verifier_coup(deplacement, &x1,&y1,&x2,&y2,BLANC, &jeu) == 3)
-		{
-			write(sock,mauvais_coup,strlen(mauvais_coup) +1);
-			close(sock);
-			exit(2);
-		}
+		res = verifier_coup(deplacement, &x1,&y1,&x2,&y2,jeu.tour,&jeu);
+		faire_dames(&jeu);
+		printf("Coup n° %d \n",jeu.nb_coups);
+		afficher_jeu(jeu);
+		jeu.tour = NOIR;
+		jeu.nb_coups++;
 		//Verifier si c'est deplacement ou une capture ou coup invalide
 		//Appliquer deplacement sur notre jeu
 		//Concat octets
-		faire_dames(&jeu);
-		jeu.nb_coups++;
-	    jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
 		printf("Coup n° %d \n",jeu.nb_coups);
 		jouer(&jeu,deplacement,rapport,&n,recu);
-		printf("coup attaque :%s \n",deplacement);
 		faire_dames(&jeu);
 		afficher_jeu(jeu);
-		write(sock,deplacement,strlen(deplacement)+1);
-		jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
-
+		send(sock,deplacement,strlen(deplacement)+1,MSG_NOSIGNAL);
+		if(jeu.nb_coups == 100){
+			break;
+		}
+		printf("coup attaque :%s \n",deplacement);
 
 
 	}
-	
 	close(sock);
-	for(n;n < 256;n++){
+	/*for(n;n < 256;n++){
 		rapport[n] = '\0';
 	}
 	printf("%d octets\n",n);
 	for ( int i = 0; i < n; i++)
 	{
 		printf("%x ",rapport[i]);
-	}
+	}*/
 	putchar('\n');
 	return 0;
 }

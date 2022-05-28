@@ -21,11 +21,10 @@ typedef struct{
     int sock;
 }client;
 
-#define PORT_INCP 49153
+#define PORT_INCP 7777
 
 sem_t attaquant;
 sem_t defense;
-char deplacement[100];
 pthread_mutex_t mut;
 void resultat_jeu(jeu_t *jeu);
 void * joueur2(void * arg);
@@ -34,6 +33,7 @@ int main()
 {
   pthread_t th;
   uint8_t rapport[256];
+  char deplacement[100];
   char dep2[100];
   uint8_t recu[20];
   char mauvais_coup[] = "MAUVAIS_COUP";
@@ -72,7 +72,7 @@ int main()
 	}
 
 	/* 4. Écouter sur la socket d'écoute */
-	if (listen(sock, 128) < 0) {
+	if (listen(sock, 1) < 0) {
 		perror("listen");
 		exit(2);
 	}
@@ -90,7 +90,7 @@ int main()
       exit(2);
   }
 
-  copier_ipv6(rapport,&n,addr_clt.sin6_addr.s6_addr);
+  //copier_ipv6(rapport,&n,addr_clt.sin6_addr.s6_addr);
   /*Converti l'adresse ipv6 sous forme binaire en texte*/
     char addr_char[INET6_ADDRSTRLEN];
     if(inet_ntop(AF_INET6, &(addr_clt.sin6_addr), addr_char, INET6_ADDRSTRLEN) == NULL){
@@ -103,73 +103,58 @@ int main()
       char date_heure[32], log_mess[256];
       strftime(date_heure, 32, "%F:%T", localtime(&now));
       sprintf(log_mess, "%s : connection avec %s\n", date_heure, addr_char);
-			pthread_mutex_lock(&mut);
 			write(fic, log_mess, strlen(log_mess));
-			pthread_mutex_unlock(&mut);
     }
 
   /*Création et initialisation d'un jeu*/
+    int x1,y1,x2,y2;
   jeu_t jeu ;
-  int x1,y1,x2,y2;
   initialiser_jeu(&jeu);
   /*Les blancs vont commencer la partie*/
   /*Pour l'attaquant*/
 	int pion_noirs,pion_blancs;
   /*Pour le défenseur*/
-  jeu.tour = BLANC;
-	while (jeu.en_cours)
+  int res;
+	while (1)
 	{
-		printf("Coup n° %d \n",jeu.nb_coups);
-		afficher_jeu(jeu);
 		jouer(&jeu,deplacement,rapport,&n,recu);
-		printf("coup : %s  %d \n",deplacement,strlen(deplacement));
+		printf("coup : %s \n",deplacement);
 		faire_dames(&jeu);
-		jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
+		afficher_jeu(jeu);
 		pion_noirs = compter_pions(NOIR,&jeu);
 		pion_blancs = compter_pions (BLANC,&jeu);
-		write(sock_echange,deplacement,strlen(deplacement)+1);
-		
-		read(sock_echange,deplacement,sizeof(deplacement));
-		strcpy(dep2,deplacement);
-		if(verifier_coup(deplacement, &x1,&y1,&x2, &y2,NOIR, &jeu) == 1){
-			ajouter_deplacement(rapport,&n,dep2);
-		}
-		
-		else if(verifier_coup(deplacement, &x1,&y1,&x2,&y2,NOIR, &jeu) == 2){
-			ajouter_capture(rapport,&n,dep2);
-		}
-		else if (verifier_coup(deplacement, &x1,&y1,&x2,&y2,NOIR, &jeu) == 3)
-		{
-			write(sock_echange,mauvais_coup,strlen(mauvais_coup) +1);
-			close(sock_echange);
-			exit(2);
-		}
+		send(sock_echange,deplacement,strlen(deplacement)+1,MSG_NOSIGNAL);
+		recv(sock_echange,deplacement,sizeof(deplacement),MSG_NOSIGNAL);
+		printf("Recu : %s",deplacement);
+		//strcpy(dep2,deplacement);
+		puts("Verif");
+		res = verifier_coup(deplacement, &x1,&y1,&x2, &y2,jeu.tour, &jeu);
+		printf("Coup n° %d \n",jeu.nb_coups);
 		faire_dames(&jeu);
 		afficher_jeu(jeu);
-		jeu.nb_coups ++;
-		jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
+		jeu.nb_coups++;
 	    pion_noirs = compter_pions(NOIR,&jeu);
     	pion_blancs = compter_pions(BLANC,&jeu);
     	if(pion_blancs == 0 ){
-			write(sock_echange,perdu,strlen(perdu)+1);
+			send(sock_echange,perdu,strlen(perdu)+1,MSG_NOSIGNAL);
 			break;
 		}
-		if(jeu.nb_coups == 99){
-			write(sock_echange,egalite,strlen(egalite)+1);
+		if(jeu.nb_coups == 100){
+			send(sock_echange,egalite,strlen(egalite)+1,MSG_NOSIGNAL);
 			break;
 		}
     }
 	resultat_jeu(&jeu);
 	close(sock_echange);
 	close(sock);
-	for(n;n < 256;n++){
+	/*for(n;n < 256;n++){
 		rapport[n] = 0;
 	}
 	printf("%d octets\n",n);
 	for ( int i = 0; i < n; i++)
 	{
 		printf("%x ",rapport[i]);
-	}
+	}*/
 	putchar('\n');
 	return 0;
 }

@@ -83,7 +83,6 @@ void initialiser_jeu(jeu_t * jeu){
   }
 
   jeu->en_cours = 1;
-  jeu->tour = 1;
   jeu->nb_coups = 0;
   jeu->tour = BLANC;
 }
@@ -221,7 +220,7 @@ void capturer(jeu_t * jeu, int numero1, int numero2, int * x1, int * y1, int * x
   numero_coord(*jeu, numero1, x1, y1);
   numero_coord(*jeu, numero2, x2, y2);
   if(jeu->plateau[*x1][*y1].dame == 1){
-    capturer_avec_une_dame(jeu,numero1,numero2,x1,y1,x2,y2);
+    return capturer_avec_une_dame(jeu,numero1,numero2,x1,y1,x2,y2);
   }
   deplacer_pion(jeu, *x1, *y1, *x2, *y2);
   if(*x1 > *x2){
@@ -274,11 +273,11 @@ int verifier_deplacement(jeu_t jeu, int numero1, int numero2){
   numero_coord(jeu, numero1, &x1, &y1);
   numero_coord(jeu, numero2, &x2, &y2);
   //Dames
-  if(jeu.plateau[x1][y1].pion && jeu.plateau[x1][y1].dame == 1){
+  if(jeu.plateau[x1][y1].pion == 1 && jeu.plateau[x1][y1].dame == 1){
     return peut_deplacer_dame(&jeu,x1,y1,x2,y2);
   }
   //Pions normaux
-  if(jeu.plateau[x1][y1].pion && jeu.plateau[x1][y1].dame == 0) {
+  if(jeu.plateau[x1][y1].pion == 1 && jeu.plateau[x1][y1].dame == 0) {
     if(jeu.plateau[x1][y1].couleur == BLANC && jeu.tour == 1 || jeu.plateau[x1][y1].couleur == NOIR && jeu.tour == 0){
       if(jeu.plateau[x2][y2].pion == 0){
         if(jeu.plateau[x1][y1].couleur == NOIR){
