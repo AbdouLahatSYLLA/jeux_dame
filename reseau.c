@@ -173,7 +173,7 @@
       deplacer_pion(jeu,x1,y1,x2,y2);
       strcpy(copie,deplacement);
       ajouter_deplacement(octets,n,copie);
-      printf("Après ajout %s\n",copie);
+     // printf("Après ajout %s\n",copie);
 
     }
     jeu->nb_coups++;
@@ -470,22 +470,22 @@ int choisir_capture_alea(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero
 
 
 void ajouter_deplacement(uint8_t * oct,int * pos,char * deplacement){
-    char * dep = strtok(deplacement,"-x");
+    char * dep = strtok(deplacement,"-");
     while (dep != NULL)
 {
     oct[*pos] = atoi(dep)+128;
     *pos = *pos +1;
-    dep = strtok(NULL,"-x");
+    dep = strtok(NULL,"-");
    
 }
 }
 void ajouter_capture(uint8_t * oct,int * pos,char * capture){
-    char *dep = strtok(capture,"x-");
+    char *dep = strtok(capture,"x");
     while (dep != NULL)
 {
     oct[*pos] =  atoi(dep);
     *pos = *pos + 1;
-    dep = strtok(NULL,"x-");
+    dep = strtok(NULL,"x");
 }
 oct[*pos -1 ] = oct[*pos -1] +128;
 }

@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
 	      printf("%s\n", gai_strerror(stat));
 	      return 2;
 	  }
+	  /*Tentative de connexion*/
 	  while (cur != NULL)
 	  {	  
 		  /*Creation de la socket */
@@ -74,7 +75,6 @@ int main(int argc, char *argv[])
 	  }
 
 	freeaddrinfo(cur);
-		/* Tentative de connection */
 
 	int pion_blancs,pion_noirs,test;
     jeu_t  jeu ;
@@ -150,7 +150,10 @@ int main(int argc, char *argv[])
 	else
 	{
 		puts("Envoi echoué");
-	}*/
+	}
+	read(sock2,deplacment,sizeof(deplacement));
+	printf("%s\n",deplacement);
+	*/
 	putchar('\n');
 	return 0;
 }

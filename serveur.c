@@ -171,6 +171,8 @@ int main()
 	{
 		puts("Envoi echoué");
 	}
+	read(sock2,deplacment,sizeof(deplacement));
+	printf("%s\n",deplacement);
 	*/
 	putchar('\n');
 	return 0;
