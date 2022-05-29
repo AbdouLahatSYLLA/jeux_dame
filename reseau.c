@@ -458,7 +458,7 @@ int choisir_capture_alea(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero
   printf("%d taille : %d \n",alea,taille);
   *numero1 = bourreaux[alea].t[0];
   *numero2 = bourreaux[alea].t[1];
-  printf("Capture : %dx%d",*numero1,*numero2);
+  printf("Capture : %dx%d\n",*numero1,*numero2);
   sprintf(deplacement, "%dx%d", *numero1, *numero2);
    if(capture_appartient(jeu, bourreaux, taille, deplacement)){
       return 1;

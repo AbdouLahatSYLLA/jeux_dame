@@ -21,12 +21,10 @@ typedef struct{
     int sock;
 }client;
 
-#define PORT_INCP 7777
+#define JEUX_DAME 7777
+#define RAPPORT 5777
 
-sem_t attaquant;
-sem_t defense;
 char deplacement[100];
-pthread_mutex_t mut;
 void resultat_jeu(jeu_t *jeu);
 void * joueur2(void * arg);
 
@@ -34,33 +32,36 @@ int main()
 {
   pthread_t th;
   uint8_t rapport[256];
-  uint8_t recu[20];
-
+  char adresse_rapport[] = "2001:910:1410:523:0:fada:80af:2bc2";
   rapport[0] = 255;
   int n = 1;
   /* Création/Ouverture d'un fichier servant de journal de connections */
-  int fic = open("journal_de_bord.log",O_WRONLY|O_CREAT|O_APPEND, 0644);
+  int fic = open("journal_de_bord.log",O_WRONLY|O_CREAT|O_TRUNC, 0644);
   if(fic < 0){
     perror("Erreur : Création/Ouverture du journal de connections");
     return 1;
   }
 
-	/* 1. Création d'une socket tcp ipv6 */
+	/* 1. Création d'une socket tcp ipv6 de la partie */
 	int sock = socket(AF_INET6, SOCK_STREAM, 0);
 	if (sock < 0) {
 		perror("socket");
 		exit(2);
 	}
 
-	/* 2. Création de la sockaddr */
+	/* 2. Création de la sockaddr de la partie */
 	struct sockaddr_in6 sa = { .sin6_family = AF_INET6,
-				                    .sin6_port = htons(PORT_INCP),
+				                    .sin6_port = htons(JEUX_DAME),
 				                    .sin6_addr = in6addr_any };
 	/* Optionnel : faire en sorte de pouvoir réutiliser l'adresse sans
 	 * attendre après la fin du serveur. */
-  int opt = 1;
+  	int opt = 1;
 	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(int));
-
+	//Sockaddr pour l'envoi au serveur du prof
+	struct sockaddr_in6 ss ={.sin6_family = AF_INET6,.sin6_port = htons(RAPPORT)};
+	if(inet_pton(AF_INET6,adresse_rapport,&ss.sin6_addr) >0){
+		puts("Succès");
+	}
 	/* 3. Attacher la socket d'écoute à l'adresse */
 	if (bind(sock, (struct sockaddr *) &sa, sizeof(sa)) < 0) {
 		perror("bind");
@@ -73,9 +74,7 @@ int main()
 		exit(2);
 	}
 
-	sem_init(&defense,0,0);
-	sem_init(&attaquant,0,1);
-  pthread_mutex_init(&mut, NULL);/*pour écrire sur le journal de bord sans compétition*/
+
 
 	/* 5. Attente passive d'une connection. */
   struct sockaddr_in6 addr_clt;
@@ -85,8 +84,8 @@ int main()
       perror("erreur : accept");
       exit(2);
   }
-
-  copier_ipv6(rapport,&n,addr_clt.sin6_addr.s6_addr);
+	//Ajouter l'ipv6 de l'adversaire dans le rapport
+    copier_ipv6(rapport,&n,addr_clt.sin6_addr.s6_addr);
   /*Converti l'adresse ipv6 sous forme binaire en texte*/
     char addr_char[INET6_ADDRSTRLEN];
     if(inet_ntop(AF_INET6, &(addr_clt.sin6_addr), addr_char, INET6_ADDRSTRLEN) == NULL){
@@ -99,9 +98,7 @@ int main()
       char date_heure[32], log_mess[256];
       strftime(date_heure, 32, "%F:%T", localtime(&now));
       sprintf(log_mess, "%s : connection avec %s\n", date_heure, addr_char);
-			pthread_mutex_lock(&mut);
 			write(fic, log_mess, strlen(log_mess));
-			pthread_mutex_unlock(&mut);
     }
 
   /*Création et initialisation d'un jeu*/
@@ -159,6 +156,22 @@ int main()
 	{
 		printf("%x ",rapport[i]);
 	}
+	//Envoi du rapport au prof
+	/*
+	int sock2 =  socket(AF_INET6, SOCK_STREAM, 0);
+	if (sock2 < 0) {
+		perror("socket");
+		exit(2);
+	}
+	if(connect(sock2,(struct sockaddr*)&ss,sizeof(ss)) == 0){
+		write(sock2,rapport,sizeof(rapport));
+		puts("Envoi réussi");
+	}
+	else
+	{
+		puts("Envoi echoué");
+	}
+	*/
 	putchar('\n');
 	return 0;
 }

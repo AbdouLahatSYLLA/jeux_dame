@@ -14,7 +14,8 @@
 #include "reseau.h"
 #include "dames.h"
 
-#define PORT_INCP 7777
+#define JEUX_DAME 7777
+#define RAPPORT 5777
 
 char deplacement[100];
 
@@ -28,17 +29,22 @@ int main(int argc, char *argv[])
 		exit(2);
 	 }
 
-	/* 1. Création d'une socket tcp ipv6 */
 	uint8_t rapport[256];
-	uint8_t recu[50];
   	rapport[0] = 1;
 	int n = 1;
+	/*Rapport a envoyer au prof */
+	char adresse_rapport[] = "2001:910:1410:523:0:fada:80af:2bc2";
+	struct sockaddr_in6 ss ={.sin6_family = AF_INET6,.sin6_port = htons(RAPPORT)};
+	if(inet_pton(AF_INET6,adresse_rapport,&ss.sin6_addr) >0){
+		puts("Succès");
+	}
+
 	/* Création de la sockaddr */
 	/*Utilisation de getaddrinfo pour pouvour utiliser de l'ipv4/ipv6,
 		chez le serveur on utilisera la famille d'adresse ipv6,
 		car les adresse ipv4 seront mappées. */
 		int stat;
-		int sock ;
+		int sock,sock2;
 		struct addrinfo hints = { .ai_socktype = SOCK_STREAM,
 															.ai_flags = AI_V4MAPPED,
 															.ai_family = AF_INET6};
@@ -50,7 +56,8 @@ int main(int argc, char *argv[])
 	      return 2;
 	  }
 	  while (cur != NULL)
-	  {
+	  {	  
+		  /*Creation de la socket */
 		  sock = socket(cur->ai_family, SOCK_STREAM, 0);
 			if (sock < 0) {
 				cur = cur->ai_next;
@@ -131,6 +138,19 @@ int main(int argc, char *argv[])
 	{
 		printf("%x ",rapport[i]);
 	}
+	/*sock2 =  socket(AF_INET6, SOCK_STREAM, 0);
+	if (sock2 < 0) {
+		perror("socket");
+		exit(2);
+	}
+	if(connect(sock2,(struct sockaddr*)&ss,sizeof(ss)) == 0){
+		write(sock2,rapport,sizeof(rapport));
+		puts("Envoi réussi");
+	}
+	else
+	{
+		puts("Envoi echoué");
+	}*/
 	putchar('\n');
 	return 0;
 }
