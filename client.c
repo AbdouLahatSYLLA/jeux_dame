@@ -79,18 +79,21 @@ int main(int argc, char *argv[])
 	{
 		printf("Coup n° %d \n",jeu.nb_coups);
 		read(sock,deplacement,sizeof(deplacement));
+		remplir_fin_de_chaine(deplacement,100);
 		test = tester_coup(jeu,deplacement);
 		if(test == 0) {
 			write(sock,"INVALIDE",strlen("INVALIDE")+1);
 			break;
 		}
 		appliquer_coup(&jeu,deplacement);
+		remplir_rapport(deplacement,rapport,&n);
 		printf("Coup n° %d \n",jeu.nb_coups);
 		faire_dames(&jeu);
 		afficher_jeu(jeu);
-		jouer(&jeu,deplacement,rapport,&n,recu);
+		jouer(&jeu,deplacement,rapport,&n);
 		faire_dames(&jeu);
-		write(sock,deplacement,strlen(deplacement) +1);
+		remplir_fin_de_chaine(deplacement,100);
+		write(sock,deplacement,sizeof(deplacement));
 		afficher_jeu(jeu);
 		pion_noirs = compter_pions(NOIR,&jeu);
 		pion_blancs = compter_pions (BLANC,&jeu);
@@ -120,14 +123,14 @@ int main(int argc, char *argv[])
     	}
 
 	close(sock);
-/*	for(n;n < 256;n++){
+	for(n;n < 256;n++){
 		rapport[n] = '\0';
 	}
 	printf("%d octets\n",n);
 	for ( int i = 0; i < n; i++)
 	{
 		printf("%x ",rapport[i]);
-	}*/
+	}
 	putchar('\n');
 	return 0;
 }

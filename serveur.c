@@ -114,15 +114,17 @@ int main()
 	while (jeu.en_cours)
 	{
 		printf("Coup n° %d \n",jeu.nb_coups);
-		jouer(&jeu,deplacement,rapport,&n,recu);
+		jouer(&jeu,deplacement,rapport,&n);
+		remplir_fin_de_chaine(deplacement,100);
 	    jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
 		faire_dames(&jeu);
 		pion_noirs = compter_pions(NOIR,&jeu);
 		pion_blancs = compter_pions (BLANC,&jeu);
 		printf("BLANC : %s \n",deplacement);
-		write(sock_echange,deplacement,strlen(deplacement)+1);
+		write(sock_echange,deplacement,sizeof(deplacement));
 		afficher_jeu(jeu);
 		read(sock_echange,deplacement,sizeof(deplacement));
+		remplir_fin_de_chaine(deplacement,100);
 		printf("NOIR : %s \n",deplacement);
 		test = tester_coup(jeu,deplacement);
 		if(test == 0){
@@ -130,6 +132,7 @@ int main()
 			break;
 		}
 		appliquer_coup(&jeu,deplacement);
+		remplir_rapport(deplacement,rapport,&n);
 		printf("Coup n° %d \n",jeu.nb_coups);
 		afficher_jeu(jeu);
 	    pion_noirs = compter_pions(NOIR,&jeu);
@@ -148,14 +151,14 @@ int main()
 	resultat_jeu(&jeu);
 	close(sock_echange);
 	close(sock);
-	/*for(n;n < 256;n++){
+	for(n;n < 256;n++){
 		rapport[n] = 0;
 	}
 	printf("%d octets\n",n);
 	for ( int i = 0; i < n; i++)
 	{
 		printf("%x ",rapport[i]);
-	}*/
+	}
 	putchar('\n');
 	return 0;
 }

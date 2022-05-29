@@ -18,7 +18,7 @@
 
 void envoyer_jeu(jeu_t *jeu ,int sock);
 void recevoir_jeu(jeu_t *jeu ,int sock);
-void jouer(jeu_t * jeu,char * deplacement,uint8_t * octets, int * n,uint8_t *dep);
+void jouer(jeu_t * jeu,char * deplacement,uint8_t * octets, int * n);
 void recherche_pion_qui_bouge(jeu_t * jeu,char * coup);
 void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup);
 void recherche_pion_qui_bouge_blanc(jeu_t * jeu,char * coup);
@@ -33,6 +33,8 @@ void appliquer_coup(jeu_t *jeu,char * coup);
 int est_deplacement (char * coup);
 int est_capture(char * coup);
 void convertir_octets_chaine(uint8_t * oct,char *deplacement);
+void remplir_fin_de_chaine(char * c, int taille);
+void remplir_rapport(char * dep, uint8_t * oct , int *n);
 //void Robot_joueur(jeu_t * jeu);
 
 

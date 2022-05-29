@@ -110,12 +110,12 @@
  }
 
 //Version bot
- void jouer(jeu_t * jeu,char * deplacement,uint8_t * octets, int * n,uint8_t *dep){
+ void jouer(jeu_t * jeu,char * deplacement,uint8_t * octets, int * n){
      int x1,x2,y1,y2,numero1,numero2,move;
      int x = 0;
      tabi_t bourreaux[50];
      char copie[100];
-     char suite[10];
+     char suite[50];
      if(capture_est_possible_alea(*jeu, &numero1, &numero2,deplacement)){
       int a,b,c,d;
       numero_coord(*jeu,numero1,&a,&b);
@@ -153,7 +153,6 @@
       }
         strcpy(copie,deplacement);
         ajouter_capture(octets,n,copie);
-        ajouter_capture(dep,&x,copie);
 
         
     }
@@ -528,3 +527,24 @@ int est_capture(char * coup){
   }
   return cpt;
 }
+
+void remplir_fin_de_chaine(char * c, int taille){
+  int k = strlen(c);
+  for ( k; k < taille; k++)
+  {
+    c[k]= '\0';
+  }
+}
+
+void remplir_rapport(char * dep, uint8_t * oct , int *n){
+    char test[100];
+    strcpy(test,dep);
+    if(est_deplacement(dep)){
+      ajouter_deplacement(oct,n,test);
+    }
+    else if(est_capture(dep)){
+      ajouter_capture(oct,n,test);
+    }
+  }
+
+  
