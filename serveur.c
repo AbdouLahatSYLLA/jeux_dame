@@ -157,7 +157,7 @@ int main()
 		printf("%x ",rapport[i]);
 	}
 	//Envoi du rapport au prof
-	/*
+	
 	int sock2 =  socket(AF_INET6, SOCK_STREAM, 0);
 	if (sock2 < 0) {
 		perror("socket");
@@ -170,10 +170,11 @@ int main()
 	else
 	{
 		puts("Envoi echoué");
+		return 1;
 	}
 	read(sock2,deplacment,sizeof(deplacement));
 	printf("%s\n",deplacement);
-	*/
+
 	putchar('\n');
 	return 0;
 }
