@@ -2,8 +2,8 @@
 Jeux de dame
 
 Apres avoir recuperer le code il est preferable de faire un make clean, 
-ensuite lancer : make.
-pour executer les programmes il faut:
+ensuite lancer : make 
+Pour executer les programmes il faut:
 - DEFENSEUR :
 si c'est le defenseur (dans ce dossier nous l'avons appellé serveur) faut faire 
 ./serveur d'abord et une fois qu il est en marche on peut nous attaquer sur l'addresse
