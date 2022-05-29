@@ -240,7 +240,7 @@ void recherche_pion_qui_bouge(jeu_t * jeu,char * coup){
 
 void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup){
   int numero1,numero2;
-  int choix[2];
+  int choix[4];
   int nb_choix = 0;
   int alea;
   if(jeu->tour == NOIR){ 
@@ -250,6 +250,7 @@ void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup){
 
       if(jeu->tour == jeu->plateau[i][j].couleur && jeu->plateau[i][j].pion > 0 ){
         if(jeu->plateau[i][j].couleur == NOIR) {
+          if(jeu->plateau[i][j].dame == 0){
           if(jeu->plateau[i+1][j-1].pion == 0){
             coord_numero(*jeu,i,j,&numero1);
             coord_numero(*jeu,i+1,j-1,&numero2);
@@ -265,6 +266,45 @@ void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup){
             printf("%d-%d\n",numero1,numero2);
             choix[nb_choix] = numero2;
             nb_choix++;
+          }
+
+          }
+          else if(jeu->plateau[i][j].dame == 1){
+          if(jeu->plateau[i+1][j-1].pion == 0){
+            coord_numero(*jeu,i,j,&numero1);
+            coord_numero(*jeu,i+1,j-1,&numero2);
+            //sprintf(coup,"%d-%d",numero1,numero2);
+            printf("%d-%d\n",numero1,numero2);
+             choix[nb_choix] = numero2;
+             nb_choix++;
+          }
+           if (jeu->plateau[i+1][j+1].pion == 0){
+            coord_numero(*jeu,i,j,&numero1);
+            coord_numero(*jeu,i+1,j+1,&numero2);
+            //sprintf(coup,"%d-%d",numero1,numero2);
+            printf("%d-%d\n",numero1,numero2);
+            choix[nb_choix] = numero2;
+            nb_choix++;
+          }
+
+          if(jeu->plateau[i-1][j-1].pion == 0){
+            coord_numero(*jeu,i,j,&numero1);
+            coord_numero(*jeu,i-1,j-1,&numero2);
+            //sprintf(coup,"%d-%d",numero1,numero2);
+            printf("%d-%d\n",numero1,numero2);
+             choix[nb_choix] = numero2;
+             nb_choix++;
+          }
+
+           if(jeu->plateau[i-1][j+1].pion == 0){
+            coord_numero(*jeu,i,j,&numero1);
+            coord_numero(*jeu,i-1,j+1,&numero2);
+            //sprintf(coup,"%d-%d",numero1,numero2);
+            printf("%d-%d\n",numero1,numero2);
+             choix[nb_choix] = numero2;
+             nb_choix++;
+          }
+
           }
 
           if (nb_choix > 0) {
@@ -294,6 +334,7 @@ for (int i = 9; i >= 0; i--)
     {
        if(jeu->tour == jeu->plateau[i][j].couleur && jeu->plateau[i][j].pion > 0 ){
         if(jeu->plateau[i][j].couleur == BLANC){
+          if(jeu->plateau[i][j].dame == 0){
           if(jeu->plateau[i-1][j+1].pion == 0){
             coord_numero(*jeu,i,j,&numero1);
             coord_numero(*jeu,i-1,j+1,&numero2);
@@ -311,7 +352,47 @@ for (int i = 9; i >= 0; i--)
             choix[nb_choix] = numero2;
             nb_choix++;
           }
-          
+
+          }
+         else if(jeu->plateau[i][j].dame == 1){
+           if(jeu->plateau[i-1][j+1].pion == 0){
+            coord_numero(*jeu,i,j,&numero1);
+            coord_numero(*jeu,i-1,j+1,&numero2);
+            //sprintf(coup,"%d-%d",numero1,numero2);
+            printf("%d-%d\n",numero1,numero2);
+            choix[nb_choix] = numero2;
+            nb_choix++;
+          }
+
+           if(jeu->plateau[i-1][j-1].pion == 0){
+            coord_numero(*jeu,i,j,&numero1);
+            coord_numero(*jeu,i-1,j-1,&numero2);
+            //sprintf(coup,"%d-%d",numero1,numero2);
+            printf("%d-%d\n",numero1,numero2);
+            choix[nb_choix] = numero2;
+            nb_choix++;
+          }
+
+           if(jeu->plateau[i+1][j+1].pion == 0){
+            coord_numero(*jeu,i,j,&numero1);
+            coord_numero(*jeu,i+1,j+1,&numero2);
+            //sprintf(coup,"%d-%d",numero1,numero2);
+            printf("%d-%d\n",numero1,numero2);
+            choix[nb_choix] = numero2;
+            nb_choix++;
+          }
+
+           if(jeu->plateau[i+1][j-1].pion == 0){
+            coord_numero(*jeu,i,j,&numero1);
+            coord_numero(*jeu,i+1,j-1,&numero2);
+            //sprintf(coup,"%d-%d",numero1,numero2);
+            printf("%d-%d\n",numero1,numero2);
+            choix[nb_choix] = numero2;
+            nb_choix++;
+          }
+
+        }
+        
           if(nb_choix > 0){
           srand(time(NULL));
            alea = rand() % nb_choix;
