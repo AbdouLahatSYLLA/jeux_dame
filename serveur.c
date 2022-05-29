@@ -104,16 +104,13 @@ int main()
   /*Création et initialisation d'un jeu*/
   jeu_t jeu ;
   initialiser_jeu(&jeu);
-  /*Les blancs vont commencer la partie*/
-  /*Pour l'attaquant*/
 	int pion_noirs,pion_blancs,test;
-  /*Pour le défenseur*/
 	while (jeu.en_cours)
 	{
 		printf("Coup n° %d \n",jeu.nb_coups);
 		jouer(&jeu,deplacement,rapport,&n);
 		remplir_fin_de_chaine(deplacement,100);
-	    jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
+	  jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
 		faire_dames(&jeu);
 		pion_noirs = compter_pions(NOIR,&jeu);
 		pion_blancs = compter_pions (BLANC,&jeu);
@@ -132,9 +129,9 @@ int main()
 		remplir_rapport(deplacement,rapport,&n);
 		printf("Coup n° %d \n",jeu.nb_coups);
 		afficher_jeu(jeu);
-	    pion_noirs = compter_pions(NOIR,&jeu);
-    	pion_blancs = compter_pions(BLANC,&jeu);
-    	if( jeu.nb_coups == 100){
+	  pion_noirs = compter_pions(NOIR,&jeu);
+    pion_blancs = compter_pions(BLANC,&jeu);
+    if( jeu.nb_coups == 100){
 			jeu.en_cours = 0;
 			write(sock_echange,"EGALITE",strlen("EGALITE")+1);
 			break;
@@ -144,7 +141,7 @@ int main()
 			write(sock_echange,"PERDU",strlen("PERDU")+1);
 			break;
 		}
-    }
+  }
 	resultat_jeu(&jeu);
 	close(sock_echange);
 	close(sock);
@@ -156,8 +153,9 @@ int main()
 	{
 		printf("%x ",rapport[i]);
 	}
+
+
 	//Envoi du rapport au prof
-	
 	int sock2 =  socket(AF_INET6, SOCK_STREAM, 0);
 	if (sock2 < 0) {
 		perror("socket");
@@ -172,16 +170,13 @@ int main()
 		puts("Envoi echoué");
 		return 1;
 	}
-	read(sock2,deplacment,sizeof(deplacement));
+	read(sock2,deplacement,sizeof(deplacement));
 	printf("%s\n",deplacement);
 
 	putchar('\n');
 	return 0;
 }
 
-
-
-//DEHOOOOORS
 void resultat_jeu(jeu_t *jeu){
 	int pion_noirs,pion_blancs;
 	pion_noirs = compter_pions(NOIR,jeu);

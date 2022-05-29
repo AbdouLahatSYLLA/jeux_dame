@@ -35,7 +35,6 @@ int est_capture(char * coup);
 void convertir_octets_chaine(uint8_t * oct,char *deplacement);
 void remplir_fin_de_chaine(char * c, int taille);
 void remplir_rapport(char * dep, uint8_t * oct , int *n);
-//void Robot_joueur(jeu_t * jeu);
 
 
 #endif
