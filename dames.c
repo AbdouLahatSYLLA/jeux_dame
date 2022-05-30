@@ -734,7 +734,7 @@ int verfier_capture_dame(jeu_t jeu,int num1,int num2){
   int k,l,x1,y1,x2,y2;
   numero_coord(jeu,num1,&x1,&y1);
   numero_coord(jeu,num2,&x2,&y2);
-  while (x1 != x2 && y1 != x2)
+  while (x1 != x2 && y1 != y2)
   {
       if(x1 > x2 && y1 > y2){
           k = x1 - 1;
@@ -752,7 +752,7 @@ int verfier_capture_dame(jeu_t jeu,int num1,int num2){
           k = x1 +1;
           l = y1 +1 ;
         }
-      if((jeu.plateau[k][l].pion == 1) || (jeu.plateau[k][l].couleur == jeu.plateau[x1][y1].couleur)){
+      if((jeu.plateau[k][l].pion == 1) && (jeu.plateau[k][l].couleur == jeu.plateau[x1][y1].couleur)){
         return 0;
       }
       else if ((jeu.plateau[k][l].pion == 0 ) || (jeu.plateau[k][l].couleur != jeu.plateau[x1][y1].couleur) ) {

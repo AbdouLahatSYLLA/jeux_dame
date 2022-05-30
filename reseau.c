@@ -204,7 +204,7 @@ int tester_coup(jeu_t jeu,char * coup){
          return 0;
         }
         capturer(&jeu,num1,num2,&x1,&y1,&x2,&y2);
-        //faire_dames(&jeu);
+
         puts("Capture réussie");
        }
 
@@ -305,49 +305,77 @@ void remplir_rapport(char * dep, uint8_t * oct , int *n){
   }
 
   void  move_alea(jeu_t jeu, int couleur,char * s){
-  int tab1[50];
-  int tab2[50];
-  int n = 0, numero1, numero2;
-  for(int i = 0; i < 10; i++){
-    for(int j = 0; j < 10; j++){
-      coord_numero(jeu, i, j, &numero1);
-      if(jeu.plateau[i][j].pion == 1){
-        if(jeu.plateau[i][j].couleur == couleur){
-          if(jeu.plateau[i][j].couleur == BLANC){
-            if(jeu.plateau[i - 1][j + 1].pion == 0){
-              coord_numero(jeu, i - 1, j + 1, &numero2);
-              tab1[n] = numero1;
-              tab2[n] = numero2;
-              n++;
+    int tab1[50];
+    int tab2[50];
+    int n = 0, numero1, numero2;
+    for(int i = 0; i < 10; i++){
+      for(int j = 0; j < 10; j++){
+        coord_numero(jeu, i, j, &numero1);
+        if(jeu.plateau[i][j].pion == 1){
+          if(jeu.plateau[i][j].couleur == couleur){
+            if(jeu.plateau[i][j].couleur == BLANC){
+              if(jeu.plateau[i - 1][j + 1].pion == 0){
+                coord_numero(jeu, i - 1, j + 1, &numero2);
+                tab1[n] = numero1;
+                tab2[n] = numero2;
+                n++;
+              }
+              if(jeu.plateau[i - 1][j - 1].pion == 0){
+                coord_numero(jeu, i - 1, j - 1, &numero2);
+                tab1[n] = numero1;
+                tab2[n] = numero2;
+                n++;
+              }
+              if(jeu.plateau[i][j].dame == 1 ){
+                 if(jeu.plateau[i + 1][j + 1].pion == 0){
+                coord_numero(jeu, i + 1, j + 1, &numero2);
+                tab1[n] = numero1;
+                tab2[n] = numero2;
+                n++;
+              }
+              if(jeu.plateau[i + 1][j - 1].pion == 0){
+                coord_numero(jeu, i + 1, j - 1, &numero2);
+                tab1[n] = numero1;
+                tab2[n] = numero2;
+                n++;
+              }
+              }
             }
-            if(jeu.plateau[i - 1][j - 1].pion == 0){
-              coord_numero(jeu, i - 1, j - 1, &numero2);
-              tab1[n] = numero1;
-              tab2[n] = numero2;
-              n++;
-            }
-          }
-          if(jeu.plateau[i][j].couleur == NOIR){
-            if(jeu.plateau[i + 1][j + 1].pion == 0){
-              coord_numero(jeu, i + 1, j + 1, &numero2);
-              tab1[n] = numero1;
-              tab2[n] = numero2;
-              n++;
-            }
-            if(jeu.plateau[i + 1][j - 1].pion == 0){
-              coord_numero(jeu, i + 1, j - 1, &numero2);
-              tab1[n] = numero1;
-              tab2[n] = numero2;
-              n++;
+            if(jeu.plateau[i][j].couleur == NOIR){
+              if(jeu.plateau[i + 1][j + 1].pion == 0){
+                coord_numero(jeu, i + 1, j + 1, &numero2);
+                tab1[n] = numero1;
+                tab2[n] = numero2;
+                n++;
+              }
+              if(jeu.plateau[i + 1][j - 1].pion == 0){
+                coord_numero(jeu, i + 1, j - 1, &numero2);
+                tab1[n] = numero1;
+                tab2[n] = numero2;
+                n++;
+              }
+              if(jeu.plateau[i][j].dame == 1){
+                 if(jeu.plateau[i - 1][j + 1].pion == 0){
+                coord_numero(jeu, i - 1, j + 1, &numero2);
+                tab1[n] = numero1;
+                tab2[n] = numero2;
+                n++;
+              }
+              if(jeu.plateau[i - 1][j - 1].pion == 0){
+                coord_numero(jeu, i - 1, j - 1, &numero2);
+                tab1[n] = numero1;
+                tab2[n] = numero2;
+                n++;
+              }
+              }
             }
           }
         }
       }
     }
+    srandom(time(NULL));
+      if(n > 0){
+    int alea = random() % n;
+    sprintf(s,"%d-%d",tab1[alea],tab2[alea]);
+      }
   }
-  srandom(time(NULL));
-    if(n > 0){
-  int alea = random() % n;
-  sprintf(s,"%d-%d",tab1[alea],tab2[alea]);
-    }
-}

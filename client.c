@@ -21,8 +21,6 @@ char deplacement[100];
 
 int main(int argc, char *argv[])
 {
-
-	//printf("%d",argc);
 	 if (argc < 2)
 	 {
 		printf(" Usage %s adresse du joueur ou nom de domaine \n",argv[0]);
@@ -30,7 +28,8 @@ int main(int argc, char *argv[])
 	 }
 
 	uint8_t rapport[256];
-  	rapport[0] = 1;
+	/*Le rapport débute 1 qui signifie qu'on joue les noirs*/
+  rapport[0] = 1;
 	int n = 1;
 	/*Rapport a envoyer au prof */
 	char adresse_rapport[] = "2001:910:1410:523:0:fada:80af:2bc2";
@@ -77,29 +76,36 @@ int main(int argc, char *argv[])
 	freeaddrinfo(cur);
 
 	int pion_blancs,pion_noirs,test;
-    jeu_t  jeu ,tmp;
+  jeu_t  jeu ,tmp;
 	initialiser_jeu(&jeu);
 	/* 4. Échange avec le serveur */
 	/* 4.1 Construction de la requête INCP */
 	int x1,x2,y1,y2;
+
+	/*Tant que la partie est en cours*/
 	while (jeu.en_cours)
 	{
 		printf("Coup n° %d \n",jeu.nb_coups);
+		/*recoit le 1er déplacement du défenseur*/
 		read(sock,deplacement,sizeof(deplacement));
 		if(!strcmp(deplacement,"PERDU") || !strcmp(deplacement,"INVALIDE") ){
 			break;
 		}
 		printf("recu %s \n",deplacement);
 		test = tester_coup(jeu,deplacement);
+		/*si le coup du defenseur n'est pas correct/ne respect pas les règle*/
 		if(test == 0) {
 			puts("Invalide ");
 			write(sock,"INVALIDE",strlen("INVALIDE")+1);
 			break;
 		}
+		/*applique le coup du défenseur recu*/
 		appliquer_coup(&jeu,deplacement);
+		/*parcours le damier a la recherche de pion remplisant la caractèristique pour devenir dame*/
 		faire_dames(&jeu);
 		pion_noirs = compter_pions(NOIR,&jeu);
 		pion_blancs = compter_pions (BLANC,&jeu);
+		/*si on a plus de pion noirs, on dir au serveur qu'on a perdu*/
 		if(pion_noirs == 0 ){
 			write(sock,"PERDU",strlen("PERDU")+1);
 			break;
@@ -108,6 +114,7 @@ int main(int argc, char *argv[])
 			write(sock,"EGALITE",strlen("EGALITE")+1);
 			break;
 		}
+		/*met les déplacment jouer convertie en héxadecimale dans rapport*/
 		remplir_rapport(deplacement,rapport,&n);
 		faire_dames(&jeu);
 		afficher_jeu(jeu);
@@ -115,11 +122,13 @@ int main(int argc, char *argv[])
 		jouer(&jeu,deplacement,rapport,&n);
 		faire_dames(&jeu);
 		remplir_fin_de_chaine(deplacement,100);
+		/*envoie le déplacement effectuer au serveur*/
 		write(sock,deplacement,sizeof(deplacement));
 		afficher_jeu(jeu);
 		usleep(1000000);
 		pion_noirs = compter_pions(NOIR,&jeu);
 		pion_blancs = compter_pions (BLANC,&jeu);
+		/*si l'adversaire n'a plus de pion on arrete*/
 		if(pion_blancs == 0 ){
 			break;
 		}
@@ -144,6 +153,7 @@ int main(int argc, char *argv[])
     	}
 
 	close(sock);
+	/*rempli de 0 le rapport si il est inférieur a 256 (condition pour envoyer le rapport)*/
 	for(;n < 256;n++){
 		rapport[n] = '\0';
 	}
@@ -159,6 +169,7 @@ int main(int argc, char *argv[])
 		perror("socket");
 		exit(2);
 	}
+	/*établisement de la connexion*/
 	if(connect(sock2,(struct sockaddr*)&ss,sizeof(ss)) == 0){
 		write(sock2,rapport,sizeof(rapport));
 		puts("Envoi réussi");
