@@ -1,4 +1,4 @@
-all: main serveur client
+all:  serveur client
 
 dames.o: dames.c dames.h
 	gcc -c dames.c
@@ -6,14 +6,11 @@ dames.o: dames.c dames.h
 reseau.o: reseau.c reseau.h
 	gcc -c reseau.c
 
-main: main.o dames.o
-	gcc -o main main.o dames.o -lm -Wall -pedantic
-
 serveur.o :serveur.c reseau.h dames.h
 	gcc -c serveur.c
 
 client.o : client.c reseau.h dames.h
-	gcc -c client.c	
+	gcc -c client.c
 
 serveur : serveur.o dames.o reseau.o
 	gcc -o serveur serveur.o reseau.o dames.o  -lm -Wall -pedantic -pthread

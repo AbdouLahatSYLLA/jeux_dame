@@ -116,6 +116,7 @@ int main()
 		printf("BLANC : %s \n",deplacement);
 		write(sock_echange,deplacement,sizeof(deplacement));
 		afficher_jeu(jeu);
+    usleep(1000000);
 		read(sock_echange,deplacement,sizeof(deplacement));
 		printf("%s \n",deplacement);
 		if(!strcmp(deplacement,"PERDU") || !strcmp(deplacement,"INVALIDE") ){
@@ -133,6 +134,7 @@ int main()
 		remplir_rapport(deplacement,rapport,&n);
 		printf("Coup n° %d \n",jeu.nb_coups);
 		afficher_jeu(jeu);
+    usleep(1000000);
 	    pion_noirs = compter_pions(NOIR,&jeu);
     	pion_blancs = compter_pions(BLANC,&jeu);
     	if( jeu.nb_coups == 100){
@@ -145,11 +147,11 @@ int main()
 			write(sock_echange,"PERDU",strlen("PERDU")+1);
 			break;
 		}
-	
+
     }
 	close(sock_echange);
 	close(sock);
-	for(n;n < 256;n++){
+	for(;n < 256;n++){
 		rapport[n] = 0;
 	}
 	printf("%d octets\n",n);
@@ -158,8 +160,8 @@ int main()
 		printf("%x ",rapport[i]);
 	}
 	//Envoi du rapport au prof
-	
-	/*int sock2 =  socket(AF_INET6, SOCK_STREAM, 0);
+
+	int sock2 =  socket(AF_INET6, SOCK_STREAM, 0);
 	if (sock2 < 0) {
 		perror("socket");
 		exit(2);
@@ -173,8 +175,8 @@ int main()
 		puts("Envoi echoué");
 		return 1;
 	}
-	read(sock2,deplacment,sizeof(deplacement));
-	printf("%s\n",deplacement);*/
+	read(sock2,deplacement,sizeof(deplacement));
+	printf("%s\n",deplacement);
 
 	putchar('\n');
 	return 0;

@@ -90,11 +90,12 @@ void initialiser_jeu(jeu_t * jeu){
 
 
 void deplacer_pion (jeu_t * jeu , int x1,int y1,int x2,int y2){
-  if(jeu->plateau[x1][y1].pion){
+
     jeu->plateau[x2][y2].pion = jeu->plateau[x1][y1].pion;
     jeu->plateau[x2][y2].couleur = jeu->plateau[x1][y1].couleur;
     jeu->plateau[x1][y1].pion = 0;
-  }
+    jeu->plateau[x1][y1].couleur = -1;
+
 }
 
 int compter_pions(int couleur,jeu_t *jeu) {
@@ -235,12 +236,12 @@ void capturer(jeu_t * jeu, int numero1, int numero2, int * x1, int * y1, int * x
       k = *x1 - 1;
       l = *y1 + 1;
     }
-  
- 
+
+
     else if( *x1 < *x2 && *y1 > *y2){
       k = *x1 + 1;
       l = *y1 - 1;
-     
+
     }
     else if( *x1 < *x2 && *y1 < *y2){
       k = *x1 + 1;
@@ -339,7 +340,7 @@ int verifier_capture(jeu_t jeu, int numero1, int numero2){
           y1 = l;
         }
      }
-    }    
+    }
   }
   return 0;
 }
@@ -534,6 +535,7 @@ void deplacer_dame(jeu_t *jeu, int x1,int y1, int x2, int y2){
     jeu->plateau[x2][y2].pion = jeu->plateau[x1][y1].pion;
     jeu->plateau[x1][y1].pion = 0;
     jeu->plateau[x2][y2].couleur = jeu->plateau[x1][y1].couleur;
+    jeu->plateau[x1][y1].couleur = -1 ;
   return;
 }
 
@@ -559,12 +561,12 @@ void capturer_avec_une_dame(jeu_t * jeu, int numero1, int numero2, int * x1, int
       k = *x1 - 1;
       l = *y1 + 1;
     }
-  
- 
+
+
     else if( *x1 < *x2 && *y1 > *y2){
       k = *x1 + 1;
       l = *y1 - 1;
-     
+
     }
     else if( *x1 < *x2 && *y1 < *y2){
       k = *x1 + 1;
@@ -574,7 +576,7 @@ void capturer_avec_une_dame(jeu_t * jeu, int numero1, int numero2, int * x1, int
     *x1 = k;
     *y1 = l;
   }
-    
+
 }
 
 
@@ -748,14 +750,14 @@ int verfier_capture_dame(jeu_t jeu,int num1,int num2){
           k = x1 +1;
           l = y1 +1 ;
         }
-      if(jeu.plateau[k][l].pion == 1 && jeu.plateau[k][l].couleur == jeu.plateau[x1][y1].couleur){
+      if((jeu.plateau[k][l].pion == 1) || (jeu.plateau[k][l].couleur == jeu.plateau[x1][y1].couleur)){
         return 0;
       }
-      else if (jeu.plateau[k][l].pion == 0 || jeu.plateau[k][l].couleur != jeu.plateau[x1][y1].couleur ) {
+      else if ((jeu.plateau[k][l].pion == 0 ) || (jeu.plateau[k][l].couleur != jeu.plateau[x1][y1].couleur) ) {
           deplacer_dame(&jeu,x1,y1,x2,y2);
       }
       x1 = k;
-      y1 = l;  
+      y1 = l;
   }
- return 1; 
+ return 1;
 }

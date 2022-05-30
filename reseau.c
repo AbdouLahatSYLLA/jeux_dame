@@ -60,7 +60,7 @@
     }
     /*Deplacements normaux*/
     else{
-      
+
       move_alea(*jeu,jeu->tour,deplacement);
       if (saisir_deplacement(deplacement, &x1, &y1, &x2, &y2, jeu->tour, jeu)) {
         strcpy(deplacement,"PERDU");
@@ -80,20 +80,6 @@
     jeu->nb_coups++;
     jeu->tour = jeu->nb_coups % 2 == 0 ? BLANC : NOIR;
  }
-/*
- void Robot_joueur(jeu_t * jeu,int sock){
-  d abord on fait la capture s il y a une capture à faire
-   sinon on recherche le premier pion qui peux se deplacer et on prends son nimero avec numero_coord-le premier deplacement
-  à faire et on envoie cette chaine comme etant notre coup;
-
-  char coup[32];
-  int numero1,numero2;
-  if(capture_est_possible(jeu,&numero1,&numero2)){
-    sprintf(coup,"%dx%d",numero1,numero2);
-    envoyer_jeu()
-  }
- }
-*/
 
 
 void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup){
@@ -101,7 +87,7 @@ void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup){
   int choix[4];
   int nb_choix = 0;
   int alea;
-  if(jeu->tour == NOIR){ 
+  if(jeu->tour == NOIR){
   for (int i = 0; i < 10; i++) {
 
     for (int j = 0; j < 10; j++) {
@@ -174,7 +160,7 @@ void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup){
 
         }
       }
-      
+
     }
 
   }
@@ -250,7 +236,7 @@ for (int i = 9; i >= 0; i--)
           }
 
         }
-        
+
           if(nb_choix > 0){
           srand(time(NULL));
            alea = rand() % nb_choix;
@@ -261,9 +247,9 @@ for (int i = 9; i >= 0; i--)
         }
       }
     }
-    
+
   }
-}  
+}
 
 int capture_est_possible_alea(jeu_t jeu, int * numero1, int * numero2,char * deplacement){
   int n = 0;
@@ -320,7 +306,7 @@ int choisir_capture_alea(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero
       return 1;
     }
   putchar('\n');
-  
+
   return 0;
 }
 
@@ -332,7 +318,7 @@ void ajouter_deplacement(uint8_t * oct,int * pos,char * deplacement){
     oct[*pos] = atoi(dep)+128;
     *pos = *pos +1;
     dep = strtok(NULL,"-");
-   
+
 }
 }
 void ajouter_capture(uint8_t * oct,int * pos,char * capture){
@@ -406,7 +392,7 @@ void appliquer_coup(jeu_t *jeu,char * coup){
       {
         deplacer_pion(jeu,x1,y1,x2,y2);
       }
-      
+
   }
   else if(est_capture(test)){
     char *tmp = strtok(test,"x");
@@ -433,7 +419,7 @@ int est_deplacement (char * coup){
   while (*c != '\0')
   {
     if(*c =='x'){
-    return 0;      
+    return 0;
     }
     if(*c == '-'){
       cpt++;
@@ -463,7 +449,7 @@ int est_capture(char * coup){
 
 void remplir_fin_de_chaine(char * c, int taille){
   int k = strlen(c);
-  for ( k; k < taille; k++)
+  for ( ; k < taille; k++)
   {
     c[k]= '\0';
   }
@@ -527,4 +513,3 @@ void remplir_rapport(char * dep, uint8_t * oct , int *n){
   sprintf(s,"%d-%d",tab1[alea],tab2[alea]);
     }
 }
-

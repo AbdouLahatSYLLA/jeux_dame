@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 	  }
 	  /*Tentative de connexion*/
 	  while (cur != NULL)
-	  {	  
+	  {
 		  /*Creation de la socket */
 		  sock = socket(cur->ai_family, SOCK_STREAM, 0);
 			if (sock < 0) {
@@ -110,11 +110,13 @@ int main(int argc, char *argv[])
 		remplir_rapport(deplacement,rapport,&n);
 		faire_dames(&jeu);
 		afficher_jeu(jeu);
+		usleep(1000000);
 		jouer(&jeu,deplacement,rapport,&n);
 		faire_dames(&jeu);
 		remplir_fin_de_chaine(deplacement,100);
 		write(sock,deplacement,sizeof(deplacement));
 		afficher_jeu(jeu);
+		usleep(1000000);
 		pion_noirs = compter_pions(NOIR,&jeu);
 		pion_blancs = compter_pions (BLANC,&jeu);
 		if(pion_blancs == 0 ){
@@ -141,7 +143,7 @@ int main(int argc, char *argv[])
     	}
 */
 	close(sock);
-	for(n;n < 256;n++){
+	for(;n < 256;n++){
 		rapport[n] = '\0';
 	}
 	printf("%d octets\n",n);
@@ -151,7 +153,7 @@ int main(int argc, char *argv[])
 	}
 
 	//Envoi du rapport au prof
-	/*sock2 =  socket(AF_INET6, SOCK_STREAM, 0);
+	sock2 =  socket(AF_INET6, SOCK_STREAM, 0);
 	if (sock2 < 0) {
 		perror("socket");
 		exit(2);
@@ -165,9 +167,9 @@ int main(int argc, char *argv[])
 		puts("Envoi echoué");
 		return 1;
 	}
-	read(sock2,deplacment,sizeof(deplacement));
-	printf("%s\n",deplacement);*/
-	
+	read(sock2,deplacement,sizeof(deplacement));
+	printf("%s\n",deplacement);
+
 	putchar('\n');
 	return 0;
 }
