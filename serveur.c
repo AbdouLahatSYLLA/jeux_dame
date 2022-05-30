@@ -131,13 +131,14 @@ int main()
 			break;
 		}
 		appliquer_coup(&jeu,deplacement);
+    faire_dames(&jeu);
 		remplir_rapport(deplacement,rapport,&n);
 		printf("Coup n° %d \n",jeu.nb_coups);
 		afficher_jeu(jeu);
     usleep(1000000);
 	    pion_noirs = compter_pions(NOIR,&jeu);
     	pion_blancs = compter_pions(BLANC,&jeu);
-    	if( jeu.nb_coups == 100){
+    	if( jeu.nb_coups == 99){
 			jeu.en_cours = 0;
 			write(sock_echange,"EGALITE",strlen("EGALITE")+1);
 			break;

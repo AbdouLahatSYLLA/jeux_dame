@@ -97,13 +97,14 @@ int main(int argc, char *argv[])
 			break;
 		}
 		appliquer_coup(&jeu,deplacement);
+		faire_dames(&jeu);
 		pion_noirs = compter_pions(NOIR,&jeu);
 		pion_blancs = compter_pions (BLANC,&jeu);
 		if(pion_noirs == 0 ){
 			write(sock,"PERDU",strlen("PERDU")+1);
 			break;
 		}
-		if(jeu.nb_coups == 100){
+		if(jeu.nb_coups == 99){
 			write(sock,"EGALITE",strlen("EGALITE")+1);
 			break;
 		}
