@@ -35,9 +35,13 @@ int est_capture(char * coup);
 void convertir_octets_chaine(uint8_t * oct,char *deplacement);
 void remplir_fin_de_chaine(char * c, int taille);
 void remplir_rapport(char * dep, uint8_t * oct , int *n);
+<<<<<<< HEAD
 void extraire(char * s,char *dest);
 //void Robot_joueur(jeu_t * jeu);
 void  move_alea(jeu_t jeu, int couleur,char * s);
 void choisir_capture_dames_alea(tabi_t bourreaux[],int * num1,int * num2,int taille);
+=======
+
+>>>>>>> acb88755becd88d578c0bf93bad43bd26caee927
 
 #endif

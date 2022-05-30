@@ -80,20 +80,51 @@
     jeu->nb_coups++;
     jeu->tour = jeu->nb_coups % 2 == 0 ? BLANC : NOIR;
  }
-/*
- void Robot_joueur(jeu_t * jeu,int sock){
-  d abord on fait la capture s il y a une capture à faire
-   sinon on recherche le premier pion qui peux se deplacer et on prends son nimero avec numero_coord-le premier deplacement
-  à faire et on envoie cette chaine comme etant notre coup;
 
-  char coup[32];
+
+void recherche_pion_qui_bouge(jeu_t * jeu,char * coup){
   int numero1,numero2;
-  if(capture_est_possible(jeu,&numero1,&numero2)){
-    sprintf(coup,"%dx%d",numero1,numero2);
-    envoyer_jeu()
+  coup = malloc(100);
+
+  for (int i = 0; i < 9; i++) {
+    for (int j = 0; j < 9; j++) {
+      if(jeu->tour == jeu->plateau[i][i].couleur){
+        if(jeu->plateau[i][i].couleur == BLANC){
+          if(jeu->plateau[i-1][j-1].pion == 0){
+            coord_numero(*jeu,i,j,&numero1);
+            coord_numero(*jeu,i-1,j-1,&numero2);
+            sprintf(coup,"%d-%d",numero1,numero2);
+            printf(coup,"%d-%d",numero1,numero2);
+            break;
+          }
+          if(jeu->plateau[i-1][j+1].pion == 0){
+            coord_numero(*jeu,i,j,&numero1);
+            coord_numero(*jeu,i-1,j+1,&numero2);
+            sprintf(coup,"%d-%d",numero1,numero2);
+            printf(coup,"%d-%d",numero1,numero2);
+            break;
+          }
+        }
+         if(jeu->plateau[i][i].couleur == NOIR){
+          if(jeu->plateau[i+1][j-1].pion == 0){
+            coord_numero(*jeu,i,j,&numero1);
+            coord_numero(*jeu,i+1,j-1,&numero2);
+            sprintf(coup,"%d-%d",numero1,numero2);
+            printf(coup,"%d-%d",numero1,numero2);
+            break;
+          }
+          if(jeu->plateau[i+1][j+1].pion == 0){
+            coord_numero(*jeu,i,j,&numero1);
+            coord_numero(*jeu,i+1,j+1,&numero2);
+            sprintf(coup,"%d-%d",numero1,numero2);
+            printf(coup,"%d-%d",numero1,numero2);
+            break;
+          }
+        }
+      }
+    }
   }
- }
-*/
+}
 
 
 void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup){
@@ -101,7 +132,7 @@ void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup){
   int choix[4];
   int nb_choix = 0;
   int alea;
-  if(jeu->tour == NOIR){ 
+  if(jeu->tour == NOIR){
   for (int i = 0; i < 10; i++) {
 
     for (int j = 0; j < 10; j++) {
@@ -112,7 +143,6 @@ void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup){
           if(jeu->plateau[i+1][j-1].pion == 0){
             coord_numero(*jeu,i,j,&numero1);
             coord_numero(*jeu,i+1,j-1,&numero2);
-            //sprintf(coup,"%d-%d",numero1,numero2);
             printf("%d-%d\n",numero1,numero2);
              choix[nb_choix] = numero2;
              nb_choix++;
@@ -120,7 +150,6 @@ void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup){
            if (jeu->plateau[i+1][j+1].pion == 0){
             coord_numero(*jeu,i,j,&numero1);
             coord_numero(*jeu,i+1,j+1,&numero2);
-            //sprintf(coup,"%d-%d",numero1,numero2);
             printf("%d-%d\n",numero1,numero2);
             choix[nb_choix] = numero2;
             nb_choix++;
@@ -131,7 +160,6 @@ void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup){
           if(jeu->plateau[i+1][j-1].pion == 0){
             coord_numero(*jeu,i,j,&numero1);
             coord_numero(*jeu,i+1,j-1,&numero2);
-            //sprintf(coup,"%d-%d",numero1,numero2);
             printf("%d-%d\n",numero1,numero2);
              choix[nb_choix] = numero2;
              nb_choix++;
@@ -139,7 +167,6 @@ void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup){
            if (jeu->plateau[i+1][j+1].pion == 0){
             coord_numero(*jeu,i,j,&numero1);
             coord_numero(*jeu,i+1,j+1,&numero2);
-            //sprintf(coup,"%d-%d",numero1,numero2);
             printf("%d-%d\n",numero1,numero2);
             choix[nb_choix] = numero2;
             nb_choix++;
@@ -148,7 +175,6 @@ void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup){
           if(jeu->plateau[i-1][j-1].pion == 0){
             coord_numero(*jeu,i,j,&numero1);
             coord_numero(*jeu,i-1,j-1,&numero2);
-            //sprintf(coup,"%d-%d",numero1,numero2);
             printf("%d-%d\n",numero1,numero2);
              choix[nb_choix] = numero2;
              nb_choix++;
@@ -157,7 +183,6 @@ void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup){
            if(jeu->plateau[i-1][j+1].pion == 0){
             coord_numero(*jeu,i,j,&numero1);
             coord_numero(*jeu,i-1,j+1,&numero2);
-            //sprintf(coup,"%d-%d",numero1,numero2);
             printf("%d-%d\n",numero1,numero2);
              choix[nb_choix] = numero2;
              nb_choix++;
@@ -174,7 +199,7 @@ void recherche_pion_qui_bouge_noir(jeu_t * jeu,char * coup){
 
         }
       }
-      
+
     }
 
   }
@@ -196,7 +221,6 @@ for (int i = 9; i >= 0; i--)
           if(jeu->plateau[i-1][j+1].pion == 0){
             coord_numero(*jeu,i,j,&numero1);
             coord_numero(*jeu,i-1,j+1,&numero2);
-            //sprintf(coup,"%d-%d",numero1,numero2);
             printf("%d-%d\n",numero1,numero2);
             choix[nb_choix] = numero2;
             nb_choix++;
@@ -205,7 +229,6 @@ for (int i = 9; i >= 0; i--)
            if(jeu->plateau[i-1][j-1].pion == 0){
             coord_numero(*jeu,i,j,&numero1);
             coord_numero(*jeu,i-1,j-1,&numero2);
-            //sprintf(coup,"%d-%d",numero1,numero2);
             printf("%d-%d\n",numero1,numero2);
             choix[nb_choix] = numero2;
             nb_choix++;
@@ -216,7 +239,6 @@ for (int i = 9; i >= 0; i--)
            if(jeu->plateau[i-1][j+1].pion == 0){
             coord_numero(*jeu,i,j,&numero1);
             coord_numero(*jeu,i-1,j+1,&numero2);
-            //sprintf(coup,"%d-%d",numero1,numero2);
             printf("%d-%d\n",numero1,numero2);
             choix[nb_choix] = numero2;
             nb_choix++;
@@ -225,7 +247,6 @@ for (int i = 9; i >= 0; i--)
            if(jeu->plateau[i-1][j-1].pion == 0){
             coord_numero(*jeu,i,j,&numero1);
             coord_numero(*jeu,i-1,j-1,&numero2);
-            //sprintf(coup,"%d-%d",numero1,numero2);
             printf("%d-%d\n",numero1,numero2);
             choix[nb_choix] = numero2;
             nb_choix++;
@@ -234,7 +255,6 @@ for (int i = 9; i >= 0; i--)
            if(jeu->plateau[i+1][j+1].pion == 0){
             coord_numero(*jeu,i,j,&numero1);
             coord_numero(*jeu,i+1,j+1,&numero2);
-            //sprintf(coup,"%d-%d",numero1,numero2);
             printf("%d-%d\n",numero1,numero2);
             choix[nb_choix] = numero2;
             nb_choix++;
@@ -243,14 +263,13 @@ for (int i = 9; i >= 0; i--)
            if(jeu->plateau[i+1][j-1].pion == 0){
             coord_numero(*jeu,i,j,&numero1);
             coord_numero(*jeu,i+1,j-1,&numero2);
-            //sprintf(coup,"%d-%d",numero1,numero2);
             printf("%d-%d\n",numero1,numero2);
             choix[nb_choix] = numero2;
             nb_choix++;
           }
 
         }
-        
+
           if(nb_choix > 0){
           srand(time(NULL));
            alea = rand() % nb_choix;
@@ -261,9 +280,9 @@ for (int i = 9; i >= 0; i--)
         }
       }
     }
-    
+
   }
-}  
+}
 
 int capture_est_possible_alea(jeu_t jeu, int * numero1, int * numero2,char * deplacement){
   int n = 0;
@@ -308,7 +327,7 @@ int capture_est_possible_alea(jeu_t jeu, int * numero1, int * numero2,char * dep
 }
 
 int choisir_capture_alea(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero1,int *numero2,char * deplacement){
-  //char choix[50];
+
   int poubelle;
   int alea;
   srand(time(NULL));
@@ -320,7 +339,7 @@ int choisir_capture_alea(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero
       return 1;
     }
   putchar('\n');
-  
+
   return 0;
 }
 
@@ -332,7 +351,7 @@ void ajouter_deplacement(uint8_t * oct,int * pos,char * deplacement){
     oct[*pos] = atoi(dep)+128;
     *pos = *pos +1;
     dep = strtok(NULL,"-");
-   
+
 }
 }
 void ajouter_capture(uint8_t * oct,int * pos,char * capture){
@@ -344,14 +363,15 @@ void ajouter_capture(uint8_t * oct,int * pos,char * capture){
 }
 oct[*pos -1 ] = oct[*pos -1] +128;
 }
+
 void copier_ipv6(uint8_t * oct,int * pos,unsigned char * addr){
-    for (int i = 0; i <16 ; i++)
-{
-    oct[*pos] = addr[i];
-    *pos = *pos + 1;
+    for (int i = 0; i <16 ; i++){
+      oct[*pos] = addr[i];
+      *pos = *pos + 1;
+    }
 }
 
-}
+
 
 int tester_coup(jeu_t jeu,char * coup){
   char test[100];
@@ -385,6 +405,7 @@ int tester_coup(jeu_t jeu,char * coup){
         //faire_dames(&jeu);
         puts("Capture réussie");
         coord_numero(jeu,x2,y2,&num1);
+
     }
     return 1;
   }
@@ -406,7 +427,7 @@ void appliquer_coup(jeu_t *jeu,char * coup){
       {
         deplacer_pion(jeu,x1,y1,x2,y2);
       }
-      
+
   }
   else if(est_capture(test)){
     char *tmp = strtok(test,"x");
@@ -414,6 +435,7 @@ void appliquer_coup(jeu_t *jeu,char * coup){
     while (tmp != NULL)
     {
        tmp = strtok(NULL,"x");
+
       if(tmp == NULL){
         break;
       }
@@ -445,6 +467,7 @@ int est_deplacement (char * coup){
   }
   return 1;
 }
+
 int est_capture(char * coup){
   char * c = coup;
     int cpt = 0;

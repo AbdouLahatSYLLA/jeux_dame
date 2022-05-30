@@ -422,12 +422,11 @@ int capture_est_possible(jeu_t jeu, int * numero1, int * numero2,char * deplacem
 }
 
 int choisir_capture(jeu_t jeu, tabi_t bourreaux[], int taille, int * numero1,int *numero2,char * deplacement){
-  //char choix[50];
+
   int poubelle;
   putchar('\n');
   while(1){
     printf("Entrer la capture à effectuer : ");
-    //scanf("%s", choix);
     sscanf(deplacement, "%dx%d", numero1,numero2);
 
     if(capture_appartient(jeu, bourreaux, taille, deplacement)){
@@ -450,8 +449,9 @@ int capture_appartient(jeu_t jeu, tabi_t bourreaux[], int taille, char capture[]
 }
 
 
-//PARTIE DAME
 
+
+//PARTIE DAME
 
 
 //on vérifie si la pièce est une dame ou non
@@ -487,9 +487,6 @@ int peut_deplacer_dame(jeu_t jeu, int x1, int y1, int x2, int y2){
   //si la case de départ est vide
   if(jeu.plateau[x1][y1].pion == 0)
     return 0;
-  //si la case d'arrivée n'est pas vide
-  //si le coup n'est pas une diagonal
-  //if(abs(x1-x2)!=abs(y1-y2))
 
   int i = x1;
   int j = y1 ;
@@ -578,12 +575,10 @@ void capturer_avec_une_dame(jeu_t * jeu, int numero1, int numero2, int * x1, int
 }
 
 
-// Signé Adbou Lahat
-//Dernière modif : penser à ajouter les déclarations dans le .h
 //afficher les captures possibles de la dame
 int captures_dame_possibles(jeu_t * jeu, int x1, int  y1, tabi_t boureaux[],int *n,int *capture) {
   int hg,hd,bg,bd,res,n1;
-  /*if(dame_peut_capturer(jeu, *x1, *y1, *x2, *y2)){*/
+
     coord_numero(*jeu,x1,y1,&n1);
     boureaux[*n].t[0]= n1;
     hg = verfier_haut_gauche(jeu,x1,y1,capture,n,boureaux,n1);
