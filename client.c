@@ -77,24 +77,37 @@ int main(int argc, char *argv[])
 	freeaddrinfo(cur);
 
 	int pion_blancs,pion_noirs,test;
-    jeu_t  jeu ;
+    jeu_t  jeu ,tmp;
 	initialiser_jeu(&jeu);
 	/* 4. Échange avec le serveur */
 	/* 4.1 Construction de la requête INCP */
-	
+	int x1,x2,y1,y2;
 	while (jeu.en_cours)
 	{
 		printf("Coup n° %d \n",jeu.nb_coups);
 		read(sock,deplacement,sizeof(deplacement));
-		remplir_fin_de_chaine(deplacement,100);
+		if(!strcmp(deplacement,"PERDU") || !strcmp(deplacement,"INVALIDE") ){
+			break;
+		}
+		printf("recu %s \n",deplacement);
 		test = tester_coup(jeu,deplacement);
 		if(test == 0) {
+			puts("Invalide ");
 			write(sock,"INVALIDE",strlen("INVALIDE")+1);
 			break;
 		}
 		appliquer_coup(&jeu,deplacement);
+		pion_noirs = compter_pions(NOIR,&jeu);
+		pion_blancs = compter_pions (BLANC,&jeu);
+		if(pion_noirs == 0 ){
+			write(sock,"PERDU",strlen("PERDU")+1);
+			break;
+		}
+		if(jeu.nb_coups == 100){
+			write(sock,"EGALITE",strlen("EGALITE")+1);
+			break;
+		}
 		remplir_rapport(deplacement,rapport,&n);
-		printf("Coup n° %d \n",jeu.nb_coups);
 		faire_dames(&jeu);
 		afficher_jeu(jeu);
 		jouer(&jeu,deplacement,rapport,&n);
@@ -105,8 +118,6 @@ int main(int argc, char *argv[])
 		pion_noirs = compter_pions(NOIR,&jeu);
 		pion_blancs = compter_pions (BLANC,&jeu);
 		if(pion_blancs == 0 ){
-			write(sock,"PERDU",strlen("PERDU")+1);
-			jeu.en_cours = 0;
 			break;
 		}
 		if(jeu.nb_coups == 100){
@@ -116,7 +127,7 @@ int main(int argc, char *argv[])
 		}
 		afficher_jeu(jeu);
 	}
-	if(pion_noirs == 0){
+	/*if(pion_noirs == 0){
       	printf("Victoire des blancs\n");
    		 }
 
@@ -128,7 +139,7 @@ int main(int argc, char *argv[])
    	   else if(jeu.nb_coups == 100){
       	printf("Egalite\n");
     	}
-
+*/
 	close(sock);
 	for(n;n < 256;n++){
 		rapport[n] = '\0';
@@ -140,7 +151,7 @@ int main(int argc, char *argv[])
 	}
 
 	//Envoi du rapport au prof
-	sock2 =  socket(AF_INET6, SOCK_STREAM, 0);
+	/*sock2 =  socket(AF_INET6, SOCK_STREAM, 0);
 	if (sock2 < 0) {
 		perror("socket");
 		exit(2);
@@ -155,7 +166,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	read(sock2,deplacment,sizeof(deplacement));
-	printf("%s\n",deplacement);
+	printf("%s\n",deplacement);*/
 	
 	putchar('\n');
 	return 0;

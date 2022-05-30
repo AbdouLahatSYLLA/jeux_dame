@@ -25,8 +25,7 @@ typedef struct{
 #define RAPPORT 5777
 
 char deplacement[100];
-void resultat_jeu(jeu_t *jeu);
-void * joueur2(void * arg);
+
 
 int main()
 {
@@ -113,18 +112,20 @@ int main()
 		printf("Coup n° %d \n",jeu.nb_coups);
 		jouer(&jeu,deplacement,rapport,&n);
 		remplir_fin_de_chaine(deplacement,100);
-	    jeu.tour = jeu.nb_coups % 2 == 0 ? BLANC : NOIR;
 		faire_dames(&jeu);
-		pion_noirs = compter_pions(NOIR,&jeu);
-		pion_blancs = compter_pions (BLANC,&jeu);
 		printf("BLANC : %s \n",deplacement);
 		write(sock_echange,deplacement,sizeof(deplacement));
 		afficher_jeu(jeu);
 		read(sock_echange,deplacement,sizeof(deplacement));
+		printf("%s \n",deplacement);
+		if(!strcmp(deplacement,"PERDU") || !strcmp(deplacement,"INVALIDE") ){
+			break;
+		}
 		remplir_fin_de_chaine(deplacement,100);
 		printf("NOIR : %s \n",deplacement);
 		test = tester_coup(jeu,deplacement);
 		if(test == 0){
+			puts("Invalide");
 			write(sock_echange,"INVALIDE",strlen("INVALIDE")+1);
 			break;
 		}
@@ -139,13 +140,13 @@ int main()
 			write(sock_echange,"EGALITE",strlen("EGALITE")+1);
 			break;
 		}
-		if(pion_noirs == 0){
+		if(pion_blancs == 0){
 			jeu.en_cours = 0;
 			write(sock_echange,"PERDU",strlen("PERDU")+1);
 			break;
 		}
+	
     }
-	resultat_jeu(&jeu);
 	close(sock_echange);
 	close(sock);
 	for(n;n < 256;n++){
@@ -158,7 +159,7 @@ int main()
 	}
 	//Envoi du rapport au prof
 	
-	int sock2 =  socket(AF_INET6, SOCK_STREAM, 0);
+	/*int sock2 =  socket(AF_INET6, SOCK_STREAM, 0);
 	if (sock2 < 0) {
 		perror("socket");
 		exit(2);
@@ -173,7 +174,7 @@ int main()
 		return 1;
 	}
 	read(sock2,deplacment,sizeof(deplacement));
-	printf("%s\n",deplacement);
+	printf("%s\n",deplacement);*/
 
 	putchar('\n');
 	return 0;
@@ -196,4 +197,13 @@ void resultat_jeu(jeu_t *jeu){
    	   else if(jeu->nb_coups == 100){
       	printf("Egalite\n");
     	}
+}
+
+void ecrire(jeu_t jeu,int sock){
+	int pn,pb;
+	pn = compter_pions(NOIR,&jeu);
+	pb = compter_pions(BLANC,&jeu);
+	if(jeu.nb_coups == 100){
+		write(sock,"EGALITE",strlen("EGALITE")+1);
+	}
 }
