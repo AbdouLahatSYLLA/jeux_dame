@@ -218,7 +218,7 @@ int saisir_deplacement(char * deplacement, int * x1, int * y1, int * x2, int * y
     }
     return 1;
 }
-
+/*fonction qui effectue la capture dans le jeu*/
 void capturer(jeu_t * jeu, int numero1, int numero2, int * x1, int * y1, int * x2, int * y2){
   numero_coord(*jeu, numero1, x1, y1);
   numero_coord(*jeu, numero2, x2, y2);
@@ -253,6 +253,7 @@ void capturer(jeu_t * jeu, int numero1, int numero2, int * x1, int * y1, int * x
   }
 }
 
+/*fonction qui convertit un numéro compris entre 1 et 50 en coordonnées  (x,y)*/
 void numero_coord(jeu_t jeu, int numero, int * x, int * y){
   for(int i = 0; i < 10; i ++){
     for(int j = 0; j < 10; j++){
@@ -267,6 +268,7 @@ void numero_coord(jeu_t jeu, int numero, int * x, int * y){
   *y = -1;
 }
 
+/*fonction qui verifie si un deplacement est correcte ou pas et renvoie 1 si oui et 0 sinon*/
 int verifier_deplacement(jeu_t jeu, int numero1, int numero2){
   int x1, y1, x2, y2;
   numero_coord(jeu, numero1, &x1, &y1);

@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 			write(sock,"PERDU",strlen("PERDU")+1);
 			break;
 		}
-		if(jeu.nb_coups == 99){
+		if(jeu.nb_coups == 100){
 			write(sock,"EGALITE",strlen("EGALITE")+1);
 			break;
 		}
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 		}
 		afficher_jeu(jeu);
 	}
-	/*if(pion_noirs == 0){
+	if(pion_noirs == 0){
       	printf("Victoire des blancs\n");
    		 }
 
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
    	   else if(jeu.nb_coups == 100){
       	printf("Egalite\n");
     	}
-*/
+
 	close(sock);
 	for(;n < 256;n++){
 		rapport[n] = '\0';
