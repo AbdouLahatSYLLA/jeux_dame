@@ -187,7 +187,6 @@ int main()
 
 
 
-//DEHOOOOORS
 void resultat_jeu(jeu_t *jeu){
 	int pion_noirs,pion_blancs;
 	pion_noirs = compter_pions(NOIR,jeu);

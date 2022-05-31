@@ -196,17 +196,14 @@ int tester_coup(jeu_t jeu,char * coup){
        printf("Capture a tester %dx%d",num1,num2);
        numero_coord(jeu,num1,&x1,&y1);
        numero_coord(jeu,num2,&x2,&y2);
-       if(verifier_dame(&jeu,x1,y1)){
-         printf("Dame\n" );
-         capturer_avec_une_dame(&jeu,num1,num2,&x1,&y1,&x2,&y2);
-       }else{
+       
          if(!verifier_capture(jeu,num1,num2)){
          return 0;
         }
         capturer(&jeu,num1,num2,&x1,&y1,&x2,&y2);
 
         puts("Capture réussie");
-       }
+       
 
         coord_numero(jeu,x2,y2,&num1);
     }

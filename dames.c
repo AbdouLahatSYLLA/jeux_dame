@@ -731,35 +731,37 @@ int verfier_bas_droite(jeu_t *jeu,int x1,int y1,int * capture,int * n,tabi_t bou
 }
 //on veut le plus long chemin pour le bot
 int verfier_capture_dame(jeu_t jeu,int num1,int num2){
-  int k,l,x1,y1,x2,y2;
+  int i,j,k,l,x1,y1,x2,y2;
   numero_coord(jeu,num1,&x1,&y1);
   numero_coord(jeu,num2,&x2,&y2);
-  while (x1 != x2 && y1 != y2)
+  i = x1;
+  j = y1;
+  while (i != x2 && j != y2)
   {
-      if(x1 > x2 && y1 > y2){
-          k = x1 - 1;
-          l = y1 -1 ;
+      if(i > x2 && j > y2){
+          k = i - 1;
+          l = j -1 ;
         }
-        else if(x1 > x2 && y1 < y2){
-          k = x1 - 1;
-          l = y1 + 1;
+        else if(i > x2 && j < y2){
+          k = i - 1;
+          l = j + 1;
         }
-       else  if(x1 < x2 && y1 > y2){
-          k = x1 + 1;
-          l = y1 - 1;
+       else  if(i < x2 && j > y2){
+          k = i + 1;
+          l = j - 1;
         }
-        else if(x1 < x2 && y1 < y2){
-          k = x1 +1;
-          l = y1 +1 ;
+        else if(i < x2 && j < y2){
+          k = i +1;
+          l = j +1 ;
         }
       if((jeu.plateau[k][l].pion == 1) && (jeu.plateau[k][l].couleur == jeu.plateau[x1][y1].couleur)){
         return 0;
       }
-      else if ((jeu.plateau[k][l].pion == 0 ) || (jeu.plateau[k][l].couleur != jeu.plateau[x1][y1].couleur) ) {
-          deplacer_dame(&jeu,x1,y1,x2,y2);
+      else {
+          deplacer_dame(&jeu,i,j,x2,y2);
       }
-      x1 = k;
-      y1 = l;
+      i = k;
+      j = l;
   }
  return 1;
 }
